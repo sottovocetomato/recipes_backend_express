@@ -22,5 +22,11 @@ db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
 db.receipts = require("./receipt.model.js")(sequelize, Sequelize);
+db.categories = require("./category.model.js")(sequelize, Sequelize);
+
+db.categories.belongsToMany(db.receipts, { through: 'ReceiptsCategories' });
+db.receipts.belongsToMany(db.categories, { through: 'ReceiptsCategories' });
+// db.categories.belongsTo(db.receipts)
+// db.receipts.hasOne(db.categories)
 
 module.exports = db;
