@@ -2,6 +2,10 @@ const express = require('express');
 const router = express.Router();
 const receipts = require('../services/receipts');
 
+
+console.log('test')
+router.get("/published", receipts.findAllPublished);
+
 /* GET programming languages. */
 router.get('/', async function(req, res, next) {
   try {

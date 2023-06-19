@@ -2,6 +2,23 @@ const db = require('./db');
 const helper = require('../helpers/main.js');
 const uiConfig = require('../config/ui')
 
+const db_seq = require("../models");
+const Receipt = db_seq.receipts;
+
+function findAllPublished(req, res) {
+  console.log('test')
+  Receipt.findAll()
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving tutorials."
+      });
+    });
+}
+
 async function getMultiple(page = 1){
   const offset = helper.getOffset(page, uiConfig.listPerPage);
   const rows = await db.query(
@@ -60,5 +77,5 @@ async function remove(id){
 }
 
 module.exports = {
-  getMultiple, create, update, remove
+  getMultiple, create, update, remove, findAllPublished
 }
