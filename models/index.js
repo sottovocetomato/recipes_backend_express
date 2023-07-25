@@ -9,11 +9,11 @@ const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
     max: dbConfig.pool.max,
     min: dbConfig.pool.min,
     acquire: dbConfig.pool.acquire,
-    idle: dbConfig.pool.idle
+    idle: dbConfig.pool.idle,
   },
   define: {
-    timestamps: false
-  }
+    timestamps: false,
+  },
 });
 
 const db = {};
@@ -24,8 +24,8 @@ db.sequelize = sequelize;
 db.receipts = require("./receipt.model.js")(sequelize, Sequelize);
 db.categories = require("./category.model.js")(sequelize, Sequelize);
 
-db.categories.belongsToMany(db.receipts, { through: 'ReceiptsCategories' });
-db.receipts.belongsToMany(db.categories, { through: 'ReceiptsCategories' });
+db.categories.belongsToMany(db.receipts, { through: "ReceiptsCategories" });
+db.receipts.belongsToMany(db.categories, { through: "ReceiptsCategories" });
 // db.categories.belongsTo(db.receipts)
 // db.receipts.hasOne(db.categories)
 
