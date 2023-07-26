@@ -5,23 +5,28 @@ const receiptsRouter = require("./routes/routes");
 
 app.use(express.json());
 
-app.use(express.static(__dirname + '/public'));
+app.use(express.static(__dirname + "/public"));
 
 app.use(function (req, res, next) {
-
   // Website you wish to allow to connect
   //res.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173');
-  res.setHeader('Access-Control-Allow-Origin', 'http://receipts.haemmid.ru');
+  res.setHeader("Access-Control-Allow-Origin", "http://receipts.haemmid.ru");
 
   // Request methods you wish to allow
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, OPTIONS, PUT, PATCH, DELETE"
+  );
 
   // Request headers you wish to allow
-  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "X-Requested-With,content-type"
+  );
 
   // Set to true if you need the website to include cookies in the requests sent
   // to the API (e.g. in case you use sessions)
-  res.setHeader('Access-Control-Allow-Credentials', true);
+  res.setHeader("Access-Control-Allow-Credentials", true);
 
   // Pass to next layer of middleware
   next();
@@ -44,8 +49,20 @@ app.use((err, req, res, next) => {
   return;
 });
 
-const db = require("./models");
-db.sequelize.sync()
+const db = require("./config/db.config");
+
+db.sequelize
+  .authenticate()
+  .then(() => {
+    console.log("Connection has been established successfully.");
+  })
+  .catch((error) => {
+    console.error("Unable to connect to the database: ", error);
+  });
+
+db.sequelize
+  // .sync({ force: true })
+  .sync()
   .then(() => {
     console.log("Synced db.");
   })
