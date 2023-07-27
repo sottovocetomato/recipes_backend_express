@@ -2,15 +2,22 @@ const express = require("express");
 const app = express();
 const port = 3000;
 const receiptsRouter = require("./routes/routes");
+const cors = require("cors");
 
 app.use(express.json());
 
 app.use(express.static(__dirname + "/public"));
 
+const corsOptions = {
+  origin: "http://localhost:5173",
+  optionsSuccessStatus: 200,
+};
+app.use(cors(corsOptions));
+
 app.use(function (req, res, next) {
   // Website you wish to allow to connect
-  //res.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173');
-  res.setHeader("Access-Control-Allow-Origin", "http://receipts.haemmid.ru");
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
+  // res.setHeader("Access-Control-Allow-Origin", "http://receipts.haemmid.ru");
 
   // Request methods you wish to allow
   res.setHeader(
@@ -48,6 +55,10 @@ app.use((err, req, res, next) => {
   res.status(statusCode).json({ message: err.message });
   return;
 });
+
+// routes
+// require("./routes/routes")(app);
+require("./routes/auth.route")(app);
 
 const db = require("./config/db.config");
 
