@@ -2,22 +2,24 @@ const db = require("../config/db.config.js");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 const jwt = require("jsonwebtoken");
+const { generateToken } = require("../helpers/jwt");
 const User = db.users;
-
-const JWT_SECRET = "my-secret-token";
 
 exports.register = async (req, res) => {
   try {
     const { username, email, password } = req.body;
     bcrypt.hash(password, saltRounds, async (err, hash) => {
-      if (err) res.status(500).json({ error: err });
+      if (err) throw new Error(err);
       else {
-        await User.create({
+        const newUser = await User.create({
           username,
           email,
           password: hash,
         });
+        res.status(200).json({ token: generateToken(newUser), user: newUser });
       }
     });
-  } catch (e) {}
+  } catch (e) {
+    res.status(500).json({ error: e });
+  }
 };
