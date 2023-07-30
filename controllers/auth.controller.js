@@ -16,7 +16,9 @@ exports.register = async (req, res) => {
           email,
           password: hash,
         });
-        res.status(200).json({ token: generateToken(newUser), user: newUser });
+        const token = generateToken(newUser);
+        User.update({ token });
+        res.status(200).json({ user: newUser });
       }
     });
   } catch (e) {
@@ -33,12 +35,12 @@ exports.login = async (req, res) => {
       },
     });
     if (!existingUser) throw new Error("User with given email is not found");
-    bcrypt.compare(password, existingUser?.password, (err, match) => {
+    bcrypt.compare(password, existingUser?.password, async (err, match) => {
       if (err) throw new Error(err);
+      const token = generateToken(existingUser);
+      const updatedUser = await User.update({ token });
       if (match) {
-        res
-          .status(200)
-          .json({ token: generateToken(existingUser), user: existingUser });
+        res.status(200).json({ user: updatedUser });
         return;
       }
       res.status(403).json({ error: "passwords do not match" });
