@@ -38,9 +38,10 @@ exports.login = async (req, res) => {
     bcrypt.compare(password, existingUser?.password, async (err, match) => {
       if (err) throw new Error(err);
       const token = generateToken(existingUser);
-      const updatedUser = await User.update({ token });
+      existingUser.token = token;
+      await existingUser.update({ token });
       if (match) {
-        res.status(200).json({ user: updatedUser });
+        res.status(200).json({ user: existingUser });
         return;
       }
       res.status(403).json({ error: "passwords do not match" });
@@ -63,6 +64,19 @@ exports.me = async (req, res) => {
       .catch((error) => {
         throw new Error(error);
       });
+  } catch (error) {
+    res.status(500).json({ error: error });
+  }
+};
+
+exports.updateUser = async (req, res) => {
+  try {
+    const { id } = req.body.id;
+    const user = await User.findByPk(id, {});
+    if (!user) {
+      throw new Error(`user with given id: ${req.body.id} cannot be found!`);
+    }
+    user.update(req?.body?.data);
   } catch (error) {
     res.status(500).json({ error: error });
   }
