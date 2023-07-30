@@ -34,7 +34,7 @@ exports.login = async (req, res) => {
         email,
       },
     });
-    if (!existingUser) throw new Error("User with given email is not found");
+    if (!existingUser) throw new Error("User with given email was not found");
     bcrypt.compare(password, existingUser?.password, async (err, match) => {
       if (err) throw new Error(err);
       const token = generateToken(existingUser);
