@@ -17,7 +17,7 @@ exports.register = async (req, res) => {
           password: hash,
         });
         const token = generateToken(newUser);
-        User.update({ token });
+        newUser.update({ token });
         res.status(200).json({ user: newUser });
       }
     });

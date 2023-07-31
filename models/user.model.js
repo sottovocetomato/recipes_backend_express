@@ -22,10 +22,8 @@ module.exports = (sequelize, Sequelize) => {
       max: 23,
     },
     token: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      min: 6,
-      max: 256,
+      type: DataTypes.TEXT("long"),
+      allowNull: true,
     },
     user_img: DataTypes.STRING,
   });
