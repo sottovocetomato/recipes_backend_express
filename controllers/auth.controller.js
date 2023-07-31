@@ -53,12 +53,16 @@ exports.login = async (req, res) => {
 
 exports.me = async (req, res) => {
   try {
+    let token = req?.headers?.authorization;
+    console.log(token);
+    if (!token) throw new Error("token is not provided");
+    token = token.split(" ")[1];
     await User.findOne({
-      where: { token: req?.headers?.authorization },
+      where: { token },
     })
       .then((user) => {
         if (user) {
-          res.status(200).json({ data: { user: user } });
+          res.status(200).json({ user: user });
         }
       })
       .catch((error) => {
