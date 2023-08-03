@@ -16,7 +16,7 @@ exports.register = async (req, res) => {
           email,
           password: hash,
         });
-        const token = generateToken(newUser);
+        const token = generateToken({ email, id: newUser?.id });
         newUser.update({ token });
         res.status(200).json({ user: newUser });
       }
@@ -35,9 +35,10 @@ exports.login = async (req, res) => {
       },
     });
     if (!existingUser) throw new Error("User with given email was not found");
+    const { id } = existingUser;
     bcrypt.compare(password, existingUser?.password, async (err, match) => {
       if (err) throw new Error(err);
-      const token = generateToken(existingUser);
+      const token = generateToken({ id, email: existingUser.email });
       existingUser.token = token;
       await existingUser.update({ token });
       if (match) {
