@@ -41,7 +41,7 @@ exports.getById = async (req, res) => {
 
 exports.update = async (req, res) => {
   try {
-    const id = req.body.id;
+    const id = req.params.id;
     const ingridient = await Ingridient.findByPk(id, {});
     if (!ingridient) throw new Error("Ingridient with given id is not found");
     ingridient.update(req?.body?.data);

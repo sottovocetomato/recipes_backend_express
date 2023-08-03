@@ -43,7 +43,7 @@ exports.getById = async (req, res) => {
 
 exports.update = async (req, res) => {
   try {
-    const id = req.body.id;
+    const id = req.params.id;
     const receipe = await Receipe.findByPk(id, {});
     if (!receipe) throw new Error("Receipe with given id is not found");
     receipe.update(req?.body?.data);
