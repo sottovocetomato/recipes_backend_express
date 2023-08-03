@@ -59,6 +59,8 @@ app.use((err, req, res, next) => {
 // routes
 // require("./routes/routes")(app);
 require("./routes/auth.route")(app);
+require("./routes/ingridients.route")(app);
+require("./routes/reciepes.route")(app);
 
 const db = require("./config/db.config");
 

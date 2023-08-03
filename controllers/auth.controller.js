@@ -82,6 +82,7 @@ exports.updateUser = async (req, res) => {
       throw new Error(`user with given id: ${req.body.id} cannot be found!`);
     }
     user.update(req?.body?.data);
+    res.status(200).json({ user });
   } catch (error) {
     res.status(500).json({ error: error });
   }

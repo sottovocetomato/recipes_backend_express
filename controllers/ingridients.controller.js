@@ -1,16 +1,14 @@
 const db = require("../config/db.config");
-const Receipe = db.recipes;
+const Ingridient = db.ingridients;
 
 exports.create = async (req, res) => {
   try {
-    const { text, title, img_url, ingredients } = req.body;
-    const newReceipe = await Receipe.create({
-      text,
-      title,
-      img_url,
-      ingredients,
+    const { name, description } = req.body;
+    const newIngridient = await Ingridient.create({
+      name,
+      description,
     });
-    res.status(200).json({ user: newReceipe });
+    res.status(200).json({ user: newIngridient });
   } catch (e) {
     res.status(500).json({ error: e });
   }
@@ -18,12 +16,12 @@ exports.create = async (req, res) => {
 
 exports.getAll = async (req, res) => {
   const { limit = 20, offset = 0 } = req.params;
-  await Receipe.findAll({
+  await Ingridient.findAll({
     limit,
     offset,
   })
-    .then((receipes) => {
-      res.status(200).send({ receipes });
+    .then((ingridient) => {
+      res.status(200).send({ ingridient });
     })
     .catch((err) => {
       res.status(500).json({ error: err });
@@ -32,9 +30,9 @@ exports.getAll = async (req, res) => {
 
 exports.getById = async (req, res) => {
   const id = req.params.id;
-  await Receipe.findByPk(id, {})
-    .then((receipe) => {
-      res.status(200).send({ receipe });
+  await Ingridient.findByPk(id, {})
+    .then((ingridient) => {
+      res.status(200).send({ ingridient });
     })
     .catch((err) => {
       res.status(500).json({ error: err });
@@ -44,10 +42,10 @@ exports.getById = async (req, res) => {
 exports.update = async (req, res) => {
   try {
     const id = req.body.id;
-    const receipe = await Receipe.findByPk(id, {});
-    if (!receipe) throw new Error("Receipe with given id is not found");
-    receipe.update(req?.body?.data);
-    res.status(200).json({ receipe });
+    const ingridient = await Ingridient.findByPk(id, {});
+    if (!ingridient) throw new Error("Ingridient with given id is not found");
+    ingridient.update(req?.body?.data);
+    res.status(200).json({ ingridient });
   } catch (e) {
     res.status(500).json({ error: e });
   }
@@ -56,11 +54,11 @@ exports.update = async (req, res) => {
 exports.delete = async (req, res) => {
   const id = req.params.id;
   // console.log(req.params);
-  await Receipe.destroy({
+  await Ingridient.destroy({
     where: { id },
   })
     .then(() => {
-      res.status(200).send("Receipe has been deleted!");
+      res.status(200).send("Ingridient has been deleted!");
     })
     .catch((err) => {
       res.status(500).json({ error: err });
