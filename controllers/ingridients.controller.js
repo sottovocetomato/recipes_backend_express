@@ -1,5 +1,6 @@
 const db = require("../config/db.config");
 const Ingridient = db.ingridients;
+const { Op } = require("sequelize");
 
 exports.create = async (req, res) => {
   try {
@@ -15,7 +16,7 @@ exports.create = async (req, res) => {
 };
 
 exports.getAll = async (req, res) => {
-  const { limit = 20, offset = 0 } = req.params;
+  const { limit = 20, offset = 0 } = req.query;
   await Ingridient.findAll({
     limit,
     offset,
@@ -25,6 +26,22 @@ exports.getAll = async (req, res) => {
     })
     .catch((err) => {
       res.status(500).json({ error: err });
+    });
+};
+
+exports.getAllFilter = async (req, res) => {
+  const { limit = 20, offset = 0, where = {} } = req.body;
+  await Ingridient.findAndCountAll({
+    where: parseFilter(where),
+    limit,
+    offset,
+  })
+    .then((ingridient) => {
+      res.status(200).send({ ingridient });
+    })
+    .catch((err) => {
+      console.log(err, "error");
+      res.status(500).json({ error: `${err}` });
     });
 };
 
