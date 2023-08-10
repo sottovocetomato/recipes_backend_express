@@ -1,6 +1,7 @@
 const db = require("../config/db.config");
 const Ingridient = db.ingridients;
 const { Op } = require("sequelize");
+const { parseFilter } = require("../helpers/filter");
 
 exports.create = async (req, res) => {
   try {
@@ -30,9 +31,9 @@ exports.getAll = async (req, res) => {
 };
 
 exports.getAllFilter = async (req, res) => {
-  const { limit = 20, offset = 0, where = {} } = req.body;
-  await Ingridient.findAndCountAll({
-    where: parseFilter(where),
+  const { limit = 20, offset = 0, filters = {} } = req.body;
+  await Ingridient.findAll({
+    where: parseFilter(filters),
     limit,
     offset,
   })
