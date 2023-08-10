@@ -6,11 +6,11 @@ const { parseFilter } = require("../helpers/filter");
 exports.create = async (req, res) => {
   try {
     const { name, description } = req.body;
-    const newIngridient = await Ingridient.create({
+    const data = await Ingridient.create({
       name,
       description,
     });
-    res.status(200).json({ user: newIngridient });
+    res.status(200).json({ data });
   } catch (e) {
     res.status(500).json({ error: e });
   }
@@ -22,8 +22,8 @@ exports.getAll = async (req, res) => {
     limit,
     offset,
   })
-    .then((ingridient) => {
-      res.status(200).send({ ingridient });
+    .then((data) => {
+      res.status(200).send({ data });
     })
     .catch((err) => {
       res.status(500).json({ error: err });
@@ -37,8 +37,8 @@ exports.getAllFilter = async (req, res) => {
     limit,
     offset,
   })
-    .then((ingridient) => {
-      res.status(200).send({ ingridient });
+    .then((data) => {
+      res.status(200).send({ data });
     })
     .catch((err) => {
       console.log(err, "error");
@@ -49,8 +49,8 @@ exports.getAllFilter = async (req, res) => {
 exports.getById = async (req, res) => {
   const id = req.params.id;
   await Ingridient.findByPk(id, {})
-    .then((ingridient) => {
-      res.status(200).send({ ingridient });
+    .then((data) => {
+      res.status(200).send({ data });
     })
     .catch((err) => {
       res.status(500).json({ error: err });
@@ -60,10 +60,10 @@ exports.getById = async (req, res) => {
 exports.update = async (req, res) => {
   try {
     const id = req.params.id;
-    const ingridient = await Ingridient.findByPk(id, {});
-    if (!ingridient) throw new Error("Ingridient with given id is not found");
-    ingridient.update(req?.body?.data);
-    res.status(200).json({ ingridient });
+    const data = await Ingridient.findByPk(id, {});
+    if (!data) throw new Error("Ingridient with given id is not found");
+    data.update(req?.body?.data);
+    res.status(200).json({ data });
   } catch (e) {
     res.status(500).json({ error: e });
   }
