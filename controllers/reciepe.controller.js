@@ -4,13 +4,13 @@ const Receipe = db.recipes;
 exports.create = async (req, res) => {
   try {
     const { text, title, img_url, ingredients } = req.body;
-    const newReceipe = await Receipe.create({
+    const data = await Receipe.create({
       text,
       title,
       img_url,
       ingredients,
     });
-    res.status(200).json({ user: newReceipe });
+    res.status(200).json({ data });
   } catch (e) {
     res.status(500).json({ error: e });
   }
@@ -22,8 +22,8 @@ exports.getAll = async (req, res) => {
     limit,
     offset,
   })
-    .then((receipes) => {
-      res.status(200).send({ receipes });
+    .then((data) => {
+      res.status(200).send({ data });
     })
     .catch((err) => {
       res.status(500).json({ error: err });
@@ -33,8 +33,8 @@ exports.getAll = async (req, res) => {
 exports.getById = async (req, res) => {
   const id = req.params.id;
   await Receipe.findByPk(id, {})
-    .then((receipe) => {
-      res.status(200).send({ receipe });
+    .then((data) => {
+      res.status(200).send({ data });
     })
     .catch((err) => {
       res.status(500).json({ error: err });
@@ -44,10 +44,10 @@ exports.getById = async (req, res) => {
 exports.update = async (req, res) => {
   try {
     const id = req.params.id;
-    const receipe = await Receipe.findByPk(id, {});
-    if (!receipe) throw new Error("Receipe with given id is not found");
-    receipe.update(req?.body?.data);
-    res.status(200).json({ receipe });
+    const data = await Receipe.findByPk(id, {});
+    if (!data) throw new Error("Receipe with given id is not found");
+    data.update(req?.body?.data);
+    res.status(200).json({ data });
   } catch (e) {
     res.status(500).json({ error: e });
   }
