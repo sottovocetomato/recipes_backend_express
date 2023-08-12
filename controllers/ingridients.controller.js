@@ -17,8 +17,9 @@ exports.create = async (req, res) => {
 };
 
 exports.getAll = async (req, res) => {
+  console.log(req.query, "REQ QUERY");
   const { limit = 20, offset = 0 } = req.query;
-  await Ingridient.findAll({
+  await Ingridient.findAndCountAll({
     limit,
     offset,
   })
