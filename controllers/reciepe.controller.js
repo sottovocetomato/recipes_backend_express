@@ -17,7 +17,7 @@ exports.create = async (req, res) => {
 };
 
 exports.getAll = async (req, res) => {
-  const { limit = 20, offset = 0 } = req.params;
+  const { limit = 20, offset = 0 } = req.query;
   await Receipe.findAll({
     limit,
     offset,

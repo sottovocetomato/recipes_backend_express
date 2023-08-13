@@ -2,6 +2,7 @@ const db = require("../config/db.config");
 const Ingridient = db.ingridients;
 const { Op } = require("sequelize");
 const { parseFilter } = require("../helpers/filter");
+const { getPaginationMeta } = require("../helpers/main");
 
 exports.create = async (req, res) => {
   try {
@@ -20,14 +21,15 @@ exports.getAll = async (req, res) => {
   console.log(req.query, "REQ QUERY");
   const { limit = 20, offset = 0 } = req.query;
   await Ingridient.findAndCountAll({
-    limit,
-    offset,
+    limit: +limit,
+    offset: +limit * +offset,
   })
-    .then((data) => {
-      res.status(200).send({ data });
+    .then(({ count, rows: data }) => {
+      const _meta = getPaginationMeta({ limit, offset, count });
+      res.status(200).send({ data, _meta });
     })
     .catch((err) => {
-      res.status(500).json({ error: err });
+      res.status(500).json({ error: `${err}` });
     });
 };
 
