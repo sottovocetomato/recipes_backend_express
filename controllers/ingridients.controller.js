@@ -19,13 +19,15 @@ exports.create = async (req, res) => {
 
 exports.getAll = async (req, res) => {
   console.log(req.query, "REQ QUERY");
-  const { limit = 20, offset = 0 } = req.query;
+  let { limit = 20, page = 1 } = req.query;
+  limit = parseInt(limit);
+  page = parseInt(page);
   await Ingridient.findAndCountAll({
-    limit: +limit,
-    offset: +limit * +offset,
+    limit: limit,
+    offset: limit * --page,
   })
     .then(({ count, rows: data }) => {
-      const _meta = getPaginationMeta({ limit, offset, count });
+      const _meta = getPaginationMeta({ limit, page, count });
       res.status(200).send({ data, _meta });
     })
     .catch((err) => {
