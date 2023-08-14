@@ -1,6 +1,7 @@
 const ingrCntrlr = require("../controllers/ingridients.controller");
 const { checkToken } = require("../middleware/checkToken");
 const { verifySignUp } = require("../middleware/verifySignUp");
+const { multerUpload } = require("../middleware/multer");
 
 module.exports = function (app) {
   app.post("/api/ingridients", ingrCntrlr.create);
@@ -11,6 +12,12 @@ module.exports = function (app) {
   app.get("/api/ingridients", ingrCntrlr.getAll);
 
   app.patch("/api/ingridients/:id", ingrCntrlr.update);
+
+  app.post(
+    "/api/ingridients/images",
+    multerUpload.single("image"),
+    ingrCntrlr.uploadImage
+  );
 
   app.delete("/api/ingridients/:id", ingrCntrlr.delete);
 };

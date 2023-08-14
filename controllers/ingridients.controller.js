@@ -3,6 +3,7 @@ const Ingridient = db.ingridients;
 const { Op } = require("sequelize");
 const { parseFilter } = require("../helpers/filter");
 const { getPaginationMeta } = require("../helpers/main");
+const { multerUpload } = require("../middleware/multer");
 
 exports.create = async (req, res) => {
   try {
@@ -71,6 +72,15 @@ exports.update = async (req, res) => {
     res.status(200).json({ data });
   } catch (e) {
     res.status(500).json({ error: e });
+  }
+};
+
+exports.uploadImage = async (req, res) => {
+  try {
+    // console.log(req.body, req.params);
+    res.status(200).send("Image uploaded!");
+  } catch (e) {
+    res.status(500).json({ error: `${e}` });
   }
 };
 
