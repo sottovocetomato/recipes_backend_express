@@ -4,6 +4,7 @@ const port = 3000;
 const receiptsRouter = require("./routes/routes");
 const cors = require("cors");
 
+
 app.use(express.json());
 
 app.use(express.static(__dirname + "/public"));
