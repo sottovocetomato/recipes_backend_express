@@ -1,4 +1,7 @@
-const multer = require("multer");
+const multer = () => {
+  console.log("heheh multer")
+  return require("multer")
+};
 const path = require("path");
 
 const checkFileType = function (file, cb) {
