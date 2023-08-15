@@ -2,6 +2,7 @@ const multer = require("multer");
 const path = require("path");
 
 const checkFileType = function (file, cb) {
+  console.log("checking file type");
   //Allowed file extensions
   const fileTypes = /jpeg|jpg|png|gif|svg/;
   console.log("checking file type");

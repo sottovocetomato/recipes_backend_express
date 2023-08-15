@@ -11,6 +11,9 @@ module.exports = (sequelize, Sequelize) => {
         type: DataTypes.TEXT,
         max: 250,
       },
+        img_url: {
+            type: DataTypes.STRING,
+        },
     },
     {
       timestamps: false,

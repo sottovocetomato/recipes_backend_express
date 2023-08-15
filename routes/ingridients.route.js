@@ -14,8 +14,8 @@ module.exports = function (app) {
   app.patch("/api/ingridients/:id", ingrCntrlr.update);
 
   app.post(
-    "/api/ingridients/images",
-    multerUpload.single("image"),
+    "/api/ingridients/images/:id",
+    multerUpload.single("file"),
     ingrCntrlr.uploadImage
   );
 

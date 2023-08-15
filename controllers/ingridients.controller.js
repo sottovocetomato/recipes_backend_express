@@ -77,8 +77,13 @@ exports.update = async (req, res) => {
 
 exports.uploadImage = async (req, res) => {
   try {
-    // console.log(req.body, req.params);
-    res.status(200).send("Image uploaded!");
+    console.log("uploadImage controller");
+    console.log(req.file);
+    const id = req.params.id;
+    const data = await Ingridient.findByPk(id, {});
+    if (!data) throw new Error("Ingridient with given id is not found");
+    data.update({img_url: req.file.path});
+    res.status(200).json({data});
   } catch (e) {
     res.status(500).json({ error: `${e}` });
   }
