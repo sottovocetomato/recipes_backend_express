@@ -1,7 +1,4 @@
-const multer = () => {
-  console.log("heheh multer")
-  return require("multer")
-};
+const multer = require("multer")
 const path = require("path");
 
 const checkFileType = function (file, cb) {
@@ -24,7 +21,7 @@ const checkFileType = function (file, cb) {
 const storageEngine = multer.diskStorage({
   destination: "./images",
   filename: (req, file, cb) => {
-    cb(null, `${Date.now()}--${file.originalname}`);
+    cb(null, `${Date.now()}-${file.originalname}`);
   },
 });
 

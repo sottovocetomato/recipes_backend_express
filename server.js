@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const port = 3000;
+const path = require('path')
 const receiptsRouter = require("./routes/routes");
 const cors = require("cors");
 
@@ -45,6 +46,9 @@ app.use(
     extended: true,
   })
 );
+
+app.use('/images', express.static(path.join(__dirname, 'images')))
+
 app.get("/", (req, res) => {
   res.json({ message: "ok" });
 });
@@ -56,6 +60,8 @@ app.use((err, req, res, next) => {
   res.status(statusCode).json({ message: err.message });
   return;
 });
+
+
 
 // routes
 // require("./routes/routes")(app);
