@@ -15,7 +15,7 @@ module.exports = function (app) {
 
   app.post(
     "/api/ingridients/images/:id",
-    multerUpload.single("file"),
+    multerUpload('ingridients').single("file"),
     ingrCntrlr.uploadImage
   );
 
