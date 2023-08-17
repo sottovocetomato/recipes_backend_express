@@ -4,7 +4,11 @@ const { verifySignUp } = require("../middleware/verifySignUp");
 const { multerUpload } = require("../middleware/multer");
 
 module.exports = function (app) {
-  app.post("/api/ingridients", ingrCntrlr.create);
+  app.post(
+    "/api/ingridients",
+    multerUpload("ingridients").single("file"),
+    ingrCntrlr.create
+  );
   app.post("/api/ingridients/filter", ingrCntrlr.getAllFilter);
 
   app.get("/api/ingridients/:id", ingrCntrlr.getById);
@@ -15,7 +19,7 @@ module.exports = function (app) {
 
   app.post(
     "/api/ingridients/:id/images",
-    multerUpload('ingridients').single("file"),
+    multerUpload("ingridients").single("file"),
     ingrCntrlr.uploadImage
   );
 
