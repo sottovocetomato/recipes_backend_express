@@ -4,7 +4,7 @@ const { Op } = require("sequelize");
 const { parseFilter } = require("../helpers/filter");
 const { getPaginationMeta } = require("../helpers/main");
 const { multerUpload } = require("../middleware/multer");
-const {appUrl} = require("../helpers/appUrl")
+const { appUrl } = require("../helpers/appUrl");
 
 exports.create = async (req, res) => {
   try {
@@ -83,9 +83,10 @@ exports.uploadImage = async (req, res) => {
     const id = req.params.id;
     const data = await Ingridient.findByPk(id, {});
     if (!data) throw new Error("Ingridient with given id is not found");
+
     const filePath = appUrl + req.file.path;
-    data.update({img_url: filePath});
-    res.status(200).json({data});
+    data.update({ img_url: filePath });
+    res.status(200).json({ data });
   } catch (e) {
     res.status(500).json({ error: `${e}` });
   }

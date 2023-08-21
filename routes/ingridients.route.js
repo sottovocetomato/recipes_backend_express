@@ -20,5 +20,11 @@ module.exports = function (app) {
     ingrCntrlr.uploadImage
   );
 
+  app.post(
+      "/api/ingridients",
+      multerUpload("ingridients").single("file"),
+      ingrCntrlr.create
+  );
+
   app.delete("/api/ingridients/:id", ingrCntrlr.delete);
 };
