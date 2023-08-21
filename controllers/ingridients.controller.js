@@ -100,7 +100,7 @@ exports.delete = async (req, res) => {
     where: { id },
   })
     .then(() => {
-      res.status(200).send("Ingridient has been deleted!");
+      res.status(200).send({message: "Ингредиент удалён!"});
     })
     .catch((err) => {
       res.status(500).json({ error: err });
