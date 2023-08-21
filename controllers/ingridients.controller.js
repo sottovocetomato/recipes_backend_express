@@ -68,9 +68,10 @@ exports.update = async (req, res) => {
   try {
     const id = req.params.id;
     const data = await Ingridient.findByPk(id, {});
+    console.log(data, "DATA");
+    console.log(req?.body, "req?.body?.data");
     if (!data) throw new Error("Ingridient with given id is not found");
-    data.update(req?.body?.data);
-    res.status(200).json({ data });
+    await data.update(req?.body).then(data => res.status(200).json({ data }))
   } catch (e) {
     res.status(500).json({ error: e });
   }
