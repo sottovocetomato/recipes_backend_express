@@ -2,5 +2,5 @@ const jwt = require("jsonwebtoken");
 const JWT_TOKEN = process.env.JWT_TOKEN;
 
 exports.generateToken = (user) => {
-  return jwt.sign({ data: user }, JWT_TOKEN, { expiresIn: "60000" });
+  return jwt.sign({ data: user }, JWT_TOKEN, { expiresIn: "10d" });
 };

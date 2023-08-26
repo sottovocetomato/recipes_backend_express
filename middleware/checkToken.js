@@ -5,7 +5,7 @@ exports.checkToken = (req, res, next) => {
   try {
     const token = req?.headers?.authorization;
     if (!token || token == "null" || token == null)
-      res.status(400).json({ error: "please provide a token" });
+      res.status(400).json({ message: "please provide a token" });
     else {
       console.log(token.split(" ")[1], "token");
       jwt.verify(token.split(" ")[1], tokenSecret, (err, value) => {
