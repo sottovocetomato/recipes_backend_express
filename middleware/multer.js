@@ -1,4 +1,4 @@
-const multer = require("multer")
+const multer = require("multer");
 const path = require("path");
 
 const checkFileType = function (file, cb) {
@@ -18,17 +18,19 @@ const checkFileType = function (file, cb) {
   }
 };
 
-const storageEngine = (filePath) => multer.diskStorage({
-  destination: `./static/images/${filePath}`,
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
-  },
-});
+const storageEngine = (filePath) =>
+  multer.diskStorage({
+    destination: `./static/images/${filePath}`,
+    filename: (req, file, cb) => {
+      cb(null, `${Date.now()}-${file.originalname}`);
+    },
+  });
 
-exports.multerUpload = (filePath) => multer({
-  storage: storageEngine(filePath),
-  limits: { fileSize: 10000000 },
-  fileFilter: (req, file, cb) => {
-    checkFileType(file, cb);
-  },
-});
+exports.multerUpload = (filePath) =>
+  multer({
+    storage: storageEngine(filePath),
+    limits: { fileSize: 10000000 },
+    fileFilter: (req, file, cb) => {
+      checkFileType(file, cb);
+    },
+  });

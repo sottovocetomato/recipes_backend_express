@@ -10,6 +10,6 @@ module.exports = function (app) {
   );
 
   app.post("/api/auth/login", authRoute.login);
-  app.get("/api/me", authRoute.me);
+  app.get("/api/me", checkToken, authRoute.me);
   app.patch("/api/me/update", authRoute.updateUser);
 };

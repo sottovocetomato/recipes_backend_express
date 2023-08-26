@@ -18,7 +18,8 @@ exports.register = async (req, res) => {
         });
         const token = generateToken({ email, id: newUser?.id });
         newUser.update({ token });
-        res.status(200).json({ user: newUser });
+        delete newUser.dataValues.password;
+        res.status(200).json({ data: newUser });
       }
     });
   } catch (e) {
@@ -41,14 +42,15 @@ exports.login = async (req, res) => {
       const token = generateToken({ id, email: existingUser.email });
       existingUser.token = token;
       await existingUser.update({ token });
+      delete existingUser.dataValues.password;
       if (match) {
-        res.status(200).json({ user: existingUser });
+        res.status(200).json({ data: existingUser });
         return;
       }
       res.status(403).json({ error: "passwords do not match" });
     });
   } catch (e) {
-    res.status(500).json({ error: e });
+    res.status(500).json({ error: `${e.message}` });
   }
 };
 
@@ -58,12 +60,13 @@ exports.me = async (req, res) => {
     console.log(token);
     if (!token) throw new Error("token is not provided");
     token = token.split(" ")[1];
-    await User.findOne({
-      where: { token },
-    })
+    await User.scope("withoutPass")
+      .findOne({
+        where: { token },
+      })
       .then((user) => {
         if (user) {
-          res.status(200).json({ user: user });
+          res.status(200).send({ data: user });
         }
       })
       .catch((error) => {
@@ -77,12 +80,12 @@ exports.me = async (req, res) => {
 exports.updateUser = async (req, res) => {
   try {
     const { id } = req.body.id;
-    const user = await User.findByPk(id, {});
+    const user = await User.scope("withoutPass").findByPk(id, {});
     if (!user) {
       throw new Error(`user with given id: ${req.body.id} cannot be found!`);
     }
     user.update(req?.body?.data);
-    res.status(200).json({ user });
+    res.status(200).json({ data: user });
   } catch (error) {
     res.status(500).json({ error: error });
   }
