@@ -51,7 +51,7 @@ app.use("/static", express.static(path.join(__dirname, "/static/")));
 app.get("/", (req, res) => {
   res.json({ message: "ok" });
 });
-app.use("/receipts", receiptsRouter);
+// app.use("/receipts", receiptsRouter);
 /* Error handler middleware */
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
@@ -64,7 +64,7 @@ app.use((err, req, res, next) => {
 // require("./routes/routes")(app);
 require("./routes/auth.route")(app);
 require("./routes/ingridients.route")(app);
-require("./routes/reciepes.route")(app);
+require("./routes/recipes.route")(app);
 
 const db = require("./config/db.config");
 
@@ -78,8 +78,8 @@ db.sequelize
   });
 
 db.sequelize
-  // .sync({ force: true })
-  .sync()
+  .sync({ force: true })
+  // .sync()
   .then(() => {
     console.log("Synced db.");
   })

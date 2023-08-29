@@ -1,16 +1,19 @@
 const { Sequelize, DataTypes, Model } = require("sequelize");
 module.exports = (sequelize, Sequelize) => {
-  const Receipe = sequelize.define(
-    "receipe",
+  const Recipe = sequelize.define(
+    "recipe",
     {
       title: {
         type: DataTypes.STRING,
       },
-      ingredients: {
-        type: DataTypes.TEXT,
+      ingridients: {
+        type: DataTypes.ARRAY,
       },
-      text: {
-        type: DataTypes.TEXT,
+        short_dsc: {
+            type: DataTypes.TEXT,
+        },
+      description: {
+        type: DataTypes.TEXT("long"),
       },
       img_url: {
         type: DataTypes.STRING,
@@ -21,5 +24,5 @@ module.exports = (sequelize, Sequelize) => {
     }
   );
 
-  return Receipe;
+  return Recipe;
 };
