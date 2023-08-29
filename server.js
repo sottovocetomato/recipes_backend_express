@@ -78,8 +78,8 @@ db.sequelize
   });
 
 db.sequelize
-  .sync({ force: true })
-  // .sync()
+  // .sync({ force: true })
+  .sync()
   .then(() => {
     console.log("Synced db.");
   })

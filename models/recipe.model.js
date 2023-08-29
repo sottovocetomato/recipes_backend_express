@@ -7,7 +7,7 @@ module.exports = (sequelize, Sequelize) => {
         type: DataTypes.STRING,
       },
       ingridients: {
-        type: DataTypes.ARRAY,
+        type: DataTypes.TEXT,
       },
         short_dsc: {
             type: DataTypes.TEXT,
