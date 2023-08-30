@@ -5,6 +5,13 @@ const path = require("path");
 const receiptsRouter = require("./routes/routes");
 const cors = require("cors");
 
+const db = require("./config/db.config");
+
+// Нужно только для разработки на локалке, потом удалить
+const Collections = db.collections;
+const Ingridients = db.ingridients;
+//
+
 app.use(express.json());
 
 app.use(express.static(__dirname + "/public"));
@@ -66,8 +73,6 @@ require("./routes/auth.route")(app);
 require("./routes/ingridients.route")(app);
 require("./routes/recipes.route")(app);
 
-const db = require("./config/db.config");
-
 db.sequelize
   .authenticate()
   .then(() => {
@@ -80,7 +85,8 @@ db.sequelize
 db.sequelize
   // .sync({ force: true })
   .sync()
-  .then(() => {
+  .then(async () => {
+    await initCollection();
     console.log("Synced db.");
   })
   .catch((err) => {
@@ -90,3 +96,57 @@ db.sequelize
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
 });
+
+// Нужно только для разработки на локалке, потом удалить
+async function initCollection() {
+  try {
+    const unitColl = await Collections.findOne({
+      where: {
+        title: "units",
+      },
+    });
+
+    if (!unitColl) {
+      const res = await Collections.create({
+        title: "units",
+        data: JSON.stringify([
+          { id: 1, title: "кг" },
+          { id: 2, title: "г" },
+          { id: 3, title: "ч.л." },
+          { id: 4, title: "ст.л" },
+          { id: 5, title: "стакан" },
+          { id: 6, title: "мл" },
+          { id: 7, title: "мл" },
+        ]),
+      });
+      console.log(res, "RES");
+    }
+
+    const ingr = await Ingridients.findAll();
+    console.log(ingr, "ingr");
+    if (!ingr || !ingr.length || !Object.keys(ingr).length) {
+      await Ingridients.create({
+        name: "Огурчик",
+        description: "Вкусный Огурчик",
+      });
+      await Ingridients.create({
+        name: "Подорожник",
+        description: "Вкусный Подорожник",
+      });
+      await Ingridients.create({
+        name: "Дыня",
+        description: "Вкусный Дыня",
+      });
+      await Ingridients.create({
+        name: "Сок томатный",
+        description: "Вкусный Сок томатный",
+      });
+      await Ingridients.create({
+        name: "Кандибобер",
+        description: "Вкусный Кандибобер",
+      });
+    }
+  } catch (error) {
+    console.log(error, "FROM INITIAL FUNCTION IN SERVER");
+  }
+}
