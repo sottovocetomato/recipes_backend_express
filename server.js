@@ -105,46 +105,72 @@ async function initCollection() {
         title: "units",
       },
     });
-
     if (!unitColl) {
-      const res = await Collections.create({
-        title: "units",
-        data: JSON.stringify([
-          { id: 1, title: "кг" },
-          { id: 2, title: "г" },
-          { id: 3, title: "ч.л." },
-          { id: 4, title: "ст.л" },
-          { id: 5, title: "стакан" },
-          { id: 6, title: "мл" },
-          { id: 7, title: "мл" },
-        ]),
-      });
+      const res = await Collections.bulkCreate([
+        {
+          collection: "units",
+          title: "кг",
+          slug: "kg",
+        },
+        {
+          collection: "units",
+          title: "г",
+          slug: "gramms",
+        },
+        {
+          collection: "units",
+          title: "ч.л.",
+          slug: "teaspoon",
+        },
+        {
+          collection: "units",
+          title: "ст.л",
+          slug: "tablespoon",
+        },
+        {
+          collection: "units",
+          title: "стакан",
+          slug: "cup",
+        },
+        {
+          collection: "units",
+          title: "мл",
+          slug: "ml",
+        },
+        {
+          collection: "units",
+          title: "л",
+          slug: "l",
+        },
+      ]);
       console.log(res, "RES");
     }
 
     const ingr = await Ingridients.findAll();
     console.log(ingr, "ingr");
     if (!ingr || !ingr.length || !Object.keys(ingr).length) {
-      await Ingridients.create({
-        name: "Огурчик",
-        description: "Вкусный Огурчик",
-      });
-      await Ingridients.create({
-        name: "Подорожник",
-        description: "Вкусный Подорожник",
-      });
-      await Ingridients.create({
-        name: "Дыня",
-        description: "Вкусный Дыня",
-      });
-      await Ingridients.create({
-        name: "Сок томатный",
-        description: "Вкусный Сок томатный",
-      });
-      await Ingridients.create({
-        name: "Кандибобер",
-        description: "Вкусный Кандибобер",
-      });
+      await Ingridients.bulkCreate([
+        {
+          name: "Огурчик",
+          description: "Вкусный Огурчик",
+        },
+        {
+          name: "Подорожник",
+          description: "Вкусный Подорожник",
+        },
+        {
+          name: "Дыня",
+          description: "Вкусный Дыня",
+        },
+        {
+          name: "Сок томатный",
+          description: "Вкусный Сок томатный",
+        },
+        {
+          name: "Кандибобер",
+          description: "Вкусный Кандибобер",
+        },
+      ]);
     }
   } catch (error) {
     console.log(error, "FROM INITIAL FUNCTION IN SERVER");

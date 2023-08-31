@@ -4,14 +4,9 @@ module.exports = (sequelize, Sequelize) => {
     "collection",
 
     {
-      id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
-      title: {
-        type: DataTypes.STRING,
-      },
-      data: DataTypes.TEXT,
-    },
-    {
-      timestamps: false,
+      collection: DataTypes.STRING,
+      title: DataTypes.STRING,
+      slug: DataTypes.STRING,
     }
   );
 
