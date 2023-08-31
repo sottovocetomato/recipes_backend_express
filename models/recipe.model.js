@@ -9,9 +9,9 @@ module.exports = (sequelize, Sequelize) => {
       ingridients: {
         type: DataTypes.TEXT,
       },
-        short_dsc: {
-            type: DataTypes.TEXT,
-        },
+      short_dsc: {
+        type: DataTypes.TEXT,
+      },
       description: {
         type: DataTypes.TEXT("long"),
       },

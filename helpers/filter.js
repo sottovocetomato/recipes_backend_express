@@ -10,6 +10,7 @@ exports.parseFilter = (filter) => {
     let val = filter[key].slice(index + 1, filter[key].indexOf(")"));
 
     if (rule === "LIKE") val = `%${val}%`;
+    if (rule === "EQ") val = `${val}`;
 
     where[key] = { [Op[rule.toLowerCase()]]: val };
   }

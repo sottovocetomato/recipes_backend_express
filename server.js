@@ -72,6 +72,7 @@ app.use((err, req, res, next) => {
 require("./routes/auth.route")(app);
 require("./routes/ingridients.route")(app);
 require("./routes/recipes.route")(app);
+require("./routes/collections.route.")(app);
 
 db.sequelize
   .authenticate()
@@ -102,7 +103,7 @@ async function initCollection() {
   try {
     const unitColl = await Collections.findOne({
       where: {
-        title: "units",
+        collection: "units",
       },
     });
     if (!unitColl) {
@@ -143,11 +144,10 @@ async function initCollection() {
           slug: "l",
         },
       ]);
-      console.log(res, "RES");
     }
 
     const ingr = await Ingridients.findAll();
-    console.log(ingr, "ingr");
+
     if (!ingr || !ingr.length || !Object.keys(ingr).length) {
       await Ingridients.bulkCreate([
         {

@@ -1,17 +1,17 @@
 const db = require("../config/db.config");
-const {appUrl} = require("../helpers/appUrl");
+const { appUrl } = require("../helpers/appUrl");
 const Recipe = db.recipes;
 
 exports.create = async (req, res) => {
   try {
-    const { text, title, img_url, ingredients } = req.body;
+    const { title, short_dsc, ingridients, description } = req.body;
     const data = await Recipe.create({
-      text,
       title,
-      img_url,
-      ingredients,
+      ingridients: JSON.stringify(ingridients),
+      short_dsc,
+      description,
     });
-    res.status(200).json({ data });
+    res.status(200).send(data);
   } catch (err) {
     res.status(500).json({ message: `${err}` });
   }
@@ -24,6 +24,10 @@ exports.getAll = async (req, res) => {
     offset,
   })
     .then((data) => {
+      data = data.map((el) => ({
+        ...el.dataValues,
+        ingridients: JSON.parse(el.dataValues.ingridients),
+      }));
       res.status(200).send({ data });
     })
     .catch((err) => {
@@ -35,6 +39,10 @@ exports.getById = async (req, res) => {
   const id = req.params.id;
   await Recipe.findByPk(id, {})
     .then((data) => {
+      data = {
+        ...data.dataValues,
+        ingridients: JSON.parse(data.dataValues.ingridients),
+      };
       res.status(200).send({ data });
     })
     .catch((err) => {
