@@ -24,10 +24,12 @@ exports.getAll = async (req, res) => {
     offset,
   })
     .then((data) => {
-      data = data.map((el) => ({
-        ...el.dataValues,
-        ingridients: JSON.parse(el.dataValues.ingridients),
-      }));
+      // console.log(data, "DATA");
+      // data = data.map((el) => ({
+      //   ...el.dataValues,
+      //   ingridients: JSON.parse(el.dataValues.ingridients),
+      // }));
+      // console.log(data, "DATA");
       res.status(200).send({ data });
     })
     .catch((err) => {
@@ -39,10 +41,12 @@ exports.getById = async (req, res) => {
   const id = req.params.id;
   await Recipe.findByPk(id, {})
     .then((data) => {
-      data = {
-        ...data.dataValues,
-        ingridients: JSON.parse(data.dataValues.ingridients),
-      };
+      // console.log(data, "DATA");
+      // data = {
+      //   ...data.dataValues,
+      //   ingridients: JSON.parse(data.dataValues.ingridients),
+      // };
+
       res.status(200).send({ data });
     })
     .catch((err) => {

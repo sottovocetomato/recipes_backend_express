@@ -8,6 +8,12 @@ module.exports = (sequelize, Sequelize) => {
       },
       ingridients: {
         type: DataTypes.TEXT,
+        get: function () {
+          return JSON.parse(this.getDataValue("ingridients"));
+        },
+        set: function (value) {
+          return this.setDataValue("ingridients", JSON.stringify(value));
+        },
       },
       short_dsc: {
         type: DataTypes.TEXT,
