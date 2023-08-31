@@ -26,7 +26,7 @@ const storageEngine = (filePath) =>
     },
   });
 
-exports.multerUpload = (filePath) =>
+exports.multerUpload = (filePath, req, file) =>
   multer({
     storage: storageEngine(filePath),
     limits: { fileSize: 10000000 },

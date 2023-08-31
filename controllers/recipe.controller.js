@@ -1,5 +1,6 @@
 const db = require("../config/db.config");
 const { appUrl } = require("../helpers/appUrl");
+const { multerUpload } = require("../middleware/multer");
 const Recipe = db.recipes;
 
 exports.create = async (req, res) => {
@@ -9,7 +10,7 @@ exports.create = async (req, res) => {
       title,
       ingridients: JSON.stringify(ingridients),
       short_dsc,
-      description,
+      description: JSON.stringify(description),
     });
     res.status(200).send(data);
   } catch (err) {
@@ -80,7 +81,7 @@ exports.delete = async (req, res) => {
     });
 };
 
-exports.uploadImage = async (req, res) => {
+exports.uploadImageById = async (req, res) => {
   try {
     const id = req.params.id;
     const data = await Recipe.findByPk(id, {});
@@ -89,6 +90,15 @@ exports.uploadImage = async (req, res) => {
     const filePath = appUrl + req.file.path;
     data.update({ img_url: filePath });
     res.status(200).json({ data });
+  } catch (e) {
+    res.status(500).json({ error: `${e}` });
+  }
+};
+
+exports.uploadImage = async (req, res) => {
+  try {
+    const filePath = appUrl + req.file.path;
+    res.status(200).send({ data: filePath });
   } catch (e) {
     res.status(500).json({ error: `${e}` });
   }

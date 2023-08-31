@@ -1,7 +1,7 @@
 const recipeCntrlr = require("../controllers/recipe.controller");
 const { checkToken } = require("../middleware/checkToken");
 const { verifySignUp } = require("../middleware/verifySignUp");
-const {multerUpload} = require("../middleware/multer");
+const { multerUpload } = require("../middleware/multer");
 
 module.exports = function (app) {
   app.post("/api/recipes", recipeCntrlr.create);
@@ -11,8 +11,14 @@ module.exports = function (app) {
   app.delete("/api/recipes/:id", recipeCntrlr.delete);
 
   app.post(
-      "/api/recipes/:id/images",
-      multerUpload('recipes').single("file"),
-      recipeCntrlr.uploadImage
+    "/api/recipes/:id/images",
+    multerUpload("recipes").single("file"),
+    recipeCntrlr.uploadImageById
+  );
+
+  app.post(
+    "/api/recipes/images",
+    multerUpload("recipes").single("file"),
+    recipeCntrlr.uploadImage
   );
 };
