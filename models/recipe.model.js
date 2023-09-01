@@ -7,7 +7,7 @@ module.exports = (sequelize, Sequelize) => {
         type: DataTypes.STRING,
       },
       ingridients: {
-        type: DataTypes.TEXT,
+        type: DataTypes.TEXT("long"),
         get: function () {
           return JSON.parse(this.getDataValue("ingridients"));
         },
@@ -20,6 +20,12 @@ module.exports = (sequelize, Sequelize) => {
       },
       description: {
         type: DataTypes.TEXT("long"),
+        get: function () {
+          return JSON.parse(this.getDataValue("description"));
+        },
+        set: function (value) {
+          return this.setDataValue("description", JSON.stringify(value));
+        },
       },
       img_url: {
         type: DataTypes.STRING,

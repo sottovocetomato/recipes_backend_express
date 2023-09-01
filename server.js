@@ -10,6 +10,7 @@ const db = require("./config/db.config");
 // Нужно только для разработки на локалке, потом удалить
 const Collections = db.collections;
 const Ingridients = db.ingridients;
+const Categories = db.categories;
 //
 
 app.use(express.json());
@@ -73,6 +74,7 @@ require("./routes/auth.route")(app);
 require("./routes/ingridients.route")(app);
 require("./routes/recipes.route")(app);
 require("./routes/collections.route.")(app);
+require("./routes/categories.route.")(app);
 
 db.sequelize
   .authenticate()
@@ -169,6 +171,36 @@ async function initCollection() {
         {
           name: "Кандибобер",
           description: "Вкусный Кандибобер",
+        },
+      ]);
+    }
+
+    const category = await Categories.findAll();
+    if (!category || !category.length || !Object.keys(category).length) {
+      await Categories.bulkCreate([
+        {
+          title: "Завтрак",
+        },
+        {
+          title: "Обед",
+        },
+        {
+          title: "Ужин",
+        },
+        {
+          title: "Десерт",
+        },
+        {
+          title: "Низкокалорийное",
+        },
+        {
+          title: "Закуски",
+        },
+        {
+          title: "Первые блюда",
+        },
+        {
+          title: "Вторые блюда",
         },
       ]);
     }
