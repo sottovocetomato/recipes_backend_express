@@ -9,4 +9,4 @@ db.collections = require("./collections.model.js")(sequelize, Sequelize);
 
 db.categories.belongsToMany(db.recipes, { through: "ReceiptsCategories" });
 db.recipes.belongsToMany(db.categories, { through: "ReceiptsCategories" });
-db.ingridients.belongsToMany(db.recipes, { through: "ReceiptsCategories" });
+db.ingridients.belongsToMany(db.recipes, { through: "ReceiptsIngridients" });
