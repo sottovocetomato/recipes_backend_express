@@ -2,16 +2,19 @@ const db = require("../config/db.config");
 const { appUrl } = require("../helpers/appUrl");
 const { multerUpload } = require("../middleware/multer");
 const Recipe = db.recipes;
+const Categories = db.categories;
 
 exports.create = async (req, res) => {
   try {
-    const { title, short_dsc, ingridients, description } = req.body;
+    const { title, short_dsc, ingridients, description, categories } = req.body;
     const data = await Recipe.create({
       title,
       ingridients: JSON.stringify(ingridients),
       short_dsc,
       description: JSON.stringify(description),
     });
+
+    data.addCategories(categories);
     res.status(200).send(data);
   } catch (err) {
     res.status(500).json({ message: `${err}` });
@@ -31,6 +34,7 @@ exports.getAll = async (req, res) => {
       //   ingridients: JSON.parse(el.dataValues.ingridients),
       // }));
       // console.log(data, "DATA");
+      console.log(data, "DATA");
       res.status(200).send({ data });
     })
     .catch((err) => {
