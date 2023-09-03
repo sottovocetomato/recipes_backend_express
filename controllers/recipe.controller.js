@@ -9,9 +9,9 @@ exports.create = async (req, res) => {
     const { title, short_dsc, ingridients, description, categories } = req.body;
     const data = await Recipe.create({
       title,
-      ingridients: JSON.stringify(ingridients),
+      ingridients,
       short_dsc,
-      description: JSON.stringify(description),
+      description,
     });
 
     data.addCategories(categories);
@@ -33,7 +33,6 @@ exports.getAll = async (req, res) => {
       //   ...el.dataValues,
       //   ingridients: JSON.parse(el.dataValues.ingridients),
       // }));
-      // console.log(data, "DATA");
       console.log(data, "DATA");
       res.status(200).send({ data });
     })
