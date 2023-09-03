@@ -3,6 +3,7 @@ const { appUrl } = require("../helpers/appUrl");
 const { multerUpload } = require("../middleware/multer");
 const Recipe = db.recipes;
 const Categories = db.categories;
+const Ingridients = db.ingridients;
 
 exports.create = async (req, res) => {
   try {
@@ -13,8 +14,9 @@ exports.create = async (req, res) => {
       short_dsc,
       description,
     });
-
+    const ingrsIds = ingridients.map((el) => el.id);
     data.addCategories(categories);
+    data.addIngridients(ingrsIds);
     res.status(200).send(data);
   } catch (err) {
     res.status(500).json({ message: `${err}` });

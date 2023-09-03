@@ -85,17 +85,26 @@ db.sequelize
     console.error("Unable to connect to the database: ", error);
   });
 
-db.sequelize
-  // .sync({ force: true })
-  .sync()
-  .then(async () => {
-    await initCollection();
-    console.log("Synced db.");
-  })
-  .catch((err) => {
-    console.log("Failed to sync db: " + err.message);
-  });
+const forceSync = async () => {
+  await db.sequelize.query("SET FOREIGN_KEY_CHECKS = 0");
+  await db.sequelize.sync({ force: true });
+  await db.sequelize.query("SET FOREIGN_KEY_CHECKS = 1"); // setting the flag back for security
+};
 
+const sync = async () => {
+  db.sequelize
+    .sync()
+    .then(async () => {
+      await initCollection();
+      console.log("Synced db.");
+    })
+    .catch((err) => {
+      console.log("Failed to sync db: " + err.message);
+    });
+};
+
+// forceSync();
+sync();
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
 });
