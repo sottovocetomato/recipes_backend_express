@@ -39,7 +39,9 @@ exports.getAll = async (req, res) => {
 
 exports.getAllFilter = async (req, res) => {
   const { limit = 20, offset = 0, filters = {} } = req.body;
+
   await Ingridient.findAll({
+
     where: parseFilter(filters),
     limit,
     offset,
