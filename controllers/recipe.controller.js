@@ -7,16 +7,20 @@ const Ingridients = db.ingridients;
 
 exports.create = async (req, res) => {
   try {
-    const { title, short_dsc, ingridients, description, categories } = req.body;
+    const { title, short_dsc, ingridients, description, category_id } =
+      req.body;
+    if (!title || !short_dsc || !ingridients || !description || !category_id) {
+      throw new Error("Not enough data to create a recipe");
+    }
     const data = await Recipe.create({
       title,
       ingridients,
       short_dsc,
       description,
-      category_id: categories,
+      category_id,
     });
     const ingrsIds = ingridients.map((el) => el.id);
-    data.addCategories(categories);
+    data.addCategories(category_id);
     data.addIngridients(ingrsIds);
     res.status(200).send(data);
   } catch (err) {
@@ -46,7 +50,7 @@ exports.getAll = async (req, res) => {
 
 exports.getById = async (req, res) => {
   const id = req.params.id;
-  await Recipe.findByPk(id, {include: Categories})
+  await Recipe.findByPk(id, { include: Categories })
     .then((data) => {
       // console.log(data, "DATA");
       // data = {
