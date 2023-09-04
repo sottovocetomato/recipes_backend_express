@@ -3,7 +3,7 @@ module.exports = (sequelize, Sequelize) => {
   const Ingridient = sequelize.define(
     "ingridient",
     {
-      name: {
+        title: {
         type: DataTypes.STRING,
         allowNull: false,
       },

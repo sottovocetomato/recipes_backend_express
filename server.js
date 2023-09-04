@@ -162,23 +162,23 @@ async function initCollection() {
     if (!ingr || !ingr.length || !Object.keys(ingr).length) {
       await Ingridients.bulkCreate([
         {
-          name: "Огурчик",
+          title: "Огурчик",
           description: "Вкусный Огурчик",
         },
         {
-          name: "Подорожник",
+          title: "Подорожник",
           description: "Вкусный Подорожник",
         },
         {
-          name: "Дыня",
+          title: "Дыня",
           description: "Вкусный Дыня",
         },
         {
-          name: "Сок томатный",
+          title: "Сок томатный",
           description: "Вкусный Сок томатный",
         },
         {
-          name: "Кандибобер",
+          title: "Кандибобер",
           description: "Вкусный Кандибобер",
         },
       ]);

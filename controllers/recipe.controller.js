@@ -13,6 +13,7 @@ exports.create = async (req, res) => {
       ingridients,
       short_dsc,
       description,
+      category_id: categories,
     });
     const ingrsIds = ingridients.map((el) => el.id);
     data.addCategories(categories);
@@ -45,7 +46,7 @@ exports.getAll = async (req, res) => {
 
 exports.getById = async (req, res) => {
   const id = req.params.id;
-  await Recipe.findByPk(id, {})
+  await Recipe.findByPk(id, {include: Categories})
     .then((data) => {
       // console.log(data, "DATA");
       // data = {
