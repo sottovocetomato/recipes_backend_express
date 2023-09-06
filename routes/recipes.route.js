@@ -4,7 +4,7 @@ const { verifySignUp } = require("../middleware/verifySignUp");
 const { multerUpload } = require("../middleware/multer");
 
 module.exports = function (app) {
-  app.post("/api/recipes", recipeCntrlr.create);
+  app.post("/api/recipes",  multerUpload("recipes").any(), recipeCntrlr.create);
   app.get("/api/recipes/:id", recipeCntrlr.getById);
   app.get("/api/recipes", recipeCntrlr.getAll);
   app.patch("/api/recipes/:id", recipeCntrlr.update);

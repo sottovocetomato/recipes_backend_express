@@ -9,6 +9,7 @@ exports.create = async (req, res) => {
   try {
     const { title, short_dsc, ingridients, description, category_id } =
       req.body;
+    console.log(req.files, "FILEEEEEEEEEEEEEEEEEEEES")
     if (!title || !short_dsc || !ingridients || !description || !category_id) {
       throw new Error("Not enough data to create a recipe");
     }
