@@ -1,6 +1,7 @@
 const db = require("../config/db.config");
 const { appUrl } = require("../helpers/appUrl");
 const { multerUpload } = require("../middleware/multer");
+const { setObjProperty } = require("../helpers/main");
 const Recipe = db.recipes;
 const Categories = db.categories;
 const Ingridients = db.ingridients;
@@ -9,16 +10,29 @@ exports.create = async (req, res) => {
   try {
     const { title, short_dsc, ingridients, description, category_id } =
       req.body;
-    console.log(req.files, "FILEEEEEEEEEEEEEEEEEEEES")
-    if (!title || !short_dsc || !ingridients || !description || !category_id) {
-      throw new Error("Not enough data to create a recipe");
+    // console.log(req.files.length, "FILEEEEEEEEEEEEEEEEEEEES");
+    // console.log(req.body, "REEEEEEEEEEEEEEQ BODY");
+
+    let recData = { title, ingridients, short_dsc, description, category_id };
+    // if (!title || !short_dsc || !ingridients || !description || !category_id) {
+    //   throw new Error("Not enough data to create a recipe");
+    // }
+
+    if (req.files.length) {
+      req.files.forEach((file) => {
+        // console.log(file, "file");
+        const imgPath = appUrl + file.path;
+        setObjProperty(recData, file.fieldname, imgPath);
+      });
     }
+    // console.log(recData, "recDataAAAAAAAAAAAAAAAA");
     const data = await Recipe.create({
       title,
       ingridients,
       short_dsc,
       description,
       category_id,
+      img_url: recData.img,
     });
     const ingrsIds = ingridients.map((el) => el.id);
     data.addCategories(category_id);
