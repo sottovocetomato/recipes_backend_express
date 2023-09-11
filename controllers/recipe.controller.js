@@ -32,7 +32,7 @@ exports.create = async (req, res) => {
       short_dsc,
       description,
       category_id,
-      img_url,
+      img_url: recData.img_url,
     });
     const ingrsIds = ingridients.map((el) => el.id);
     data.addCategories(category_id);
