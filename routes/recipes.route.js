@@ -6,21 +6,31 @@ const multer = require("multer");
 const upload = multer();
 
 module.exports = function (app) {
-  app.post("/api/recipes", multerUpload("recipes").any(), recipeCntrlr.create);
+  app.post(
+    "/api/recipes",
+    [checkToken, multerUpload("recipes").any()],
+    recipeCntrlr.create
+  );
+
   app.get("/api/recipes/:id", recipeCntrlr.getById);
+
   app.get("/api/recipes", recipeCntrlr.getAll);
-  app.patch("/api/recipes/:id", multerUpload("recipes").any(), recipeCntrlr.update);
-  app.delete("/api/recipes/:id", recipeCntrlr.delete);
+  app.patch(
+    "/api/recipes/:id",
+    [checkToken, multerUpload("recipes").any()],
+    recipeCntrlr.update
+  );
+  app.delete("/api/recipes/:id", checkToken, recipeCntrlr.delete);
 
   app.post(
     "/api/recipes/:id/images",
-    multerUpload("recipes").single("file"),
+    [checkToken, multerUpload("recipes").single("file")],
     recipeCntrlr.uploadImageById
   );
 
   app.post(
     "/api/recipes/images",
-    multerUpload("recipes").single("file"),
+    [checkToken, multerUpload("recipes").single("file")],
     recipeCntrlr.uploadImage
   );
 };

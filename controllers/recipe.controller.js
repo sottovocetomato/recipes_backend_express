@@ -1,7 +1,7 @@
 const db = require("../config/db.config");
 const { appUrl } = require("../helpers/appUrl");
 const { multerUpload } = require("../middleware/multer");
-const { setObjProperty, mergeObjects} = require("../helpers/main");
+const { setObjProperty, mergeObjects } = require("../helpers/main");
 const Recipe = db.recipes;
 const Categories = db.categories;
 const Ingridients = db.ingridients;
@@ -13,14 +13,20 @@ exports.create = async (req, res) => {
     // console.log(req.files.length, "FILEEEEEEEEEEEEEEEEEEEES");
     // console.log(req.body, "REEEEEEEEEEEEEEQ BODY");
 
-    let recData = { title, ingridients, short_dsc, description, category_id, img_url };
-    // if (!title || !short_dsc || !ingridients || !description || !category_id) {
-    //   throw new Error("Not enough data to create a recipe");
-    // }
+    let recData = {
+      title,
+      ingridients,
+      short_dsc,
+      description,
+      category_id,
+      img_url,
+    };
+    if (!title || !short_dsc || !ingridients || !description || !category_id) {
+      throw new Error("Not enough data to create a recipe");
+    }
 
     if (req.files.length) {
       req.files.forEach((file) => {
-        // console.log(file, "file");
         const imgPath = appUrl + file.path;
         setObjProperty(recData, file.fieldname, imgPath);
       });
@@ -50,12 +56,6 @@ exports.getAll = async (req, res) => {
     offset,
   })
     .then((data) => {
-      // console.log(data, "DATA");
-      // data = data.map((el) => ({
-      //   ...el.dataValues,
-      //   ingridients: JSON.parse(el.dataValues.ingridients),
-      // }));
-      console.log(data, "DATA");
       res.status(200).send({ data });
     })
     .catch((err) => {
@@ -67,12 +67,6 @@ exports.getById = async (req, res) => {
   const id = req.params.id;
   await Recipe.findByPk(id, { include: Categories })
     .then((data) => {
-      // console.log(data, "DATA");
-      // data = {
-      //   ...data.dataValues,
-      //   ingridients: JSON.parse(data.dataValues.ingridients),
-      // };
-
       res.status(200).send({ data });
     })
     .catch((err) => {
@@ -84,6 +78,7 @@ exports.update = async (req, res) => {
   try {
     const id = req.params.id;
     const data = await Recipe.findByPk(id, {});
+    if (!data) throw new Error("Recipe with given id is not found");
     let recData = req?.body;
     if (req.files.length) {
       req.files.forEach((file) => {
@@ -91,7 +86,6 @@ exports.update = async (req, res) => {
         setObjProperty(recData, file.fieldname, imgPath);
       });
     }
-    if (!data) throw new Error("Recipe with given id is not found");
     // mergeObjects(data.dataValues, recData)
     // console.log(data.dataValues, "DATAAAAA");
     data.update(recData);
