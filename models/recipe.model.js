@@ -12,7 +12,7 @@ module.exports = (sequelize, Sequelize) => {
                     return JSON.parse(this.getDataValue("ingridients"));
                 },
                 set: function (value) {
-                    return this.setDataValue("ingridients", JSON.stringify(value));
+                    return this.setDataValue("ingridients", typeof value === 'object' ? JSON.stringify(value) : value);
                 },
             },
 
@@ -22,7 +22,7 @@ module.exports = (sequelize, Sequelize) => {
                     return JSON.parse(this.getDataValue("category_id"));
                 },
                 set: function (value) {
-                    return this.setDataValue("category_id", JSON.stringify(value));
+                    return this.setDataValue("category_id", typeof value === 'object' ? JSON.stringify(value) : value);
                 },
             },
             short_dsc: {
@@ -31,10 +31,10 @@ module.exports = (sequelize, Sequelize) => {
             description: {
                 type: DataTypes.TEXT("long"),
                 get: function () {
-                    return JSON.parse(this.getDataValue("description"));
+                    return JSON.parse(this.getDataValue("description" ))
                 },
                 set: function (value) {
-                    return this.setDataValue("description", JSON.stringify(value));
+                    return this.setDataValue("description", typeof value === 'object' ? JSON.stringify(value) : value);
                 },
             },
             img_url: {

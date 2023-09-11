@@ -36,9 +36,37 @@ function setObjProperty(obj, path, value) {
   tempObj[names[len - 1]] = value;
 }
 
+function mergeObjects(mainObj, mergeObj) {
+
+  Object.keys(mergeObj).forEach(key => {
+    console.log(key, "KEY")
+    if(!mainObj.hasOwnProperty(key)) return
+    if(isJsonString(mainObj[key])) mainObj[key] = JSON.parse(mainObj[key])
+    const isObj = typeof mainObj[key] === 'object';
+    const hasNested = Object.values(mainObj[key]).some(el => typeof el === 'object');
+
+    if(isObj && hasNested) {
+      mergeObjects(mainObj[key], mergeObj[key])
+    } else if(isObj && !hasNested) {
+      mainObj[key] = Array.isArray( mainObj[key]) ? mergeObj[key] : {...mainObj[key], ...mergeObj[key]}
+    } else {
+      mainObj[key] = mergeObj[key]
+    }
+    console.log(mainObj[key], "ainObj[key]")
+  })
+}
+function isJsonString(str) {
+  try {
+    JSON.parse(str);
+  } catch (e) {
+    return false;
+  }
+  return true;
+}
 module.exports = {
   getOffset,
   emptyOrRows,
   getPaginationMeta,
   setObjProperty,
+  mergeObjects
 };

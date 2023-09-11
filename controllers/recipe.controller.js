@@ -1,19 +1,19 @@
 const db = require("../config/db.config");
 const { appUrl } = require("../helpers/appUrl");
 const { multerUpload } = require("../middleware/multer");
-const { setObjProperty } = require("../helpers/main");
+const { setObjProperty, mergeObjects} = require("../helpers/main");
 const Recipe = db.recipes;
 const Categories = db.categories;
 const Ingridients = db.ingridients;
 
 exports.create = async (req, res) => {
   try {
-    const { title, short_dsc, ingridients, description, category_id } =
+    const { title, short_dsc, ingridients, description, category_id, img_url } =
       req.body;
     // console.log(req.files.length, "FILEEEEEEEEEEEEEEEEEEEES");
     // console.log(req.body, "REEEEEEEEEEEEEEQ BODY");
 
-    let recData = { title, ingridients, short_dsc, description, category_id };
+    let recData = { title, ingridients, short_dsc, description, category_id, img_url };
     // if (!title || !short_dsc || !ingridients || !description || !category_id) {
     //   throw new Error("Not enough data to create a recipe");
     // }
@@ -32,7 +32,7 @@ exports.create = async (req, res) => {
       short_dsc,
       description,
       category_id,
-      img_url: recData.img,
+      img_url,
     });
     const ingrsIds = ingridients.map((el) => el.id);
     data.addCategories(category_id);
@@ -84,9 +84,18 @@ exports.update = async (req, res) => {
   try {
     const id = req.params.id;
     const data = await Recipe.findByPk(id, {});
+    let recData = req?.body;
+    if (req.files.length) {
+      req.files.forEach((file) => {
+        const imgPath = appUrl + file.path;
+        setObjProperty(recData, file.fieldname, imgPath);
+      });
+    }
     if (!data) throw new Error("Recipe with given id is not found");
-    data.update(req?.body?.data);
-    res.status(200).json({ data });
+    // mergeObjects(data.dataValues, recData)
+    // console.log(data.dataValues, "DATAAAAA");
+    data.update(recData);
+    res.status(200).send({ data });
   } catch (err) {
     res.status(500).json({ message: `${err}` });
   }
