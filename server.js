@@ -2,12 +2,12 @@ const express = require("express");
 const app = express();
 const port = 3000;
 const path = require("path");
-const receiptsRouter = require("./routes/routes");
+
 const cors = require("cors");
 
 const db = require("./config/db.config");
 const bcrypt = require("bcrypt");
-const {generateToken} = require("./helpers/jwt");
+const { generateToken } = require("./helpers/jwt");
 
 // Нужно только для разработки на локалке, потом удалить
 const Collections = db.collections;
@@ -62,7 +62,7 @@ app.use("/static", express.static(path.join(__dirname, "/static/")));
 app.get("/", (req, res) => {
   res.json({ message: "ok" });
 });
-// app.use("/receipts", receiptsRouter);
+
 /* Error handler middleware */
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
@@ -72,7 +72,7 @@ app.use((err, req, res, next) => {
 });
 
 // routes
-// require("./routes/routes")(app);
+
 require("./routes/auth.route")(app);
 require("./routes/ingridients.route")(app);
 require("./routes/recipes.route")(app);
@@ -187,17 +187,20 @@ async function initCollection() {
       ]);
     }
     const user = await User.findByPk(1);
-    if(!user) {
-      bcrypt.hash('admin123', 10, async (err, hash) => {
+    if (!user) {
+      bcrypt.hash("admin123", 10, async (err, hash) => {
         if (err) throw new Error(err);
         else {
           const newUser = await User.create({
-            username: 'admin',
-            email: 'admin@test.com',
+            username: "admin",
+            email: "admin@test.com",
             password: hash,
           });
-          const token = generateToken({email: 'admin@test.com', id: newUser?.id});
-          newUser.update({token});
+          const token = generateToken({
+            email: "admin@test.com",
+            id: newUser?.id,
+          });
+          newUser.update({ token });
         }
       });
     }

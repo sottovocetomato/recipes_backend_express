@@ -13,8 +13,14 @@ exports.create = async (req, res) => {
   try {
     let token = req?.headers?.authorization;
     token = token.split(" ")[1];
-    const { title, short_dsc, ingridients, recipe_steps, category_id, img_url } =
-      req.body;
+    const {
+      title,
+      short_dsc,
+      ingridients,
+      recipe_steps,
+      category_id,
+      img_url,
+    } = req.body;
     // console.log(req.files.length, "FILEEEEEEEEEEEEEEEEEEEES");
     // console.log(req.body, "REEEEEEEEEEEEEEQ BODY");
 
@@ -39,7 +45,7 @@ exports.create = async (req, res) => {
     // console.log(recData, "recDataAAAAAAAAAAAAAAAA");
     const user = await User.findOne({
       where: { token },
-    })
+    });
     const data = await Recipe.create({
       title,
       ingridients,
@@ -48,15 +54,19 @@ exports.create = async (req, res) => {
       img_url: recData.img_url,
     });
 
-    const ingrsIds = ingridients.map((el) => el.ing_id);
+    const ingrsIds = ingridients.map((el) => el.ingridientId);
     data.addCategories(category_id);
 
-    const steps = await RecipeSteps.bulkCreate(recipe_steps, {returning: true})
-    const ingrs = await RecipeIngridient.bulkCreate(ingridients, {returning: true})
+    const steps = await RecipeSteps.bulkCreate(recipe_steps, {
+      returning: true,
+    });
+    const ingrs = await RecipeIngridient.bulkCreate(ingridients, {
+      returning: true,
+    });
 
     data.addRecipe_steps(steps);
     data.addRecipe_ingridients(ingrs);
-    data.addIngridients(ingrsIds)
+    data.addIngridients(ingrsIds);
     data.setUser(user.id);
 
     res.status(200).send(data);
@@ -70,6 +80,7 @@ exports.getAll = async (req, res) => {
   await Recipe.findAll({
     limit,
     offset,
+    Y,
   })
     .then((data) => {
       res.status(200).send({ data });
