@@ -6,16 +6,6 @@ module.exports = (sequelize, Sequelize) => {
             title: {
                 type: DataTypes.STRING,
             },
-            ingridients: {
-                type: DataTypes.TEXT("long"),
-                get: function () {
-                    return JSON.parse(this.getDataValue("ingridients"));
-                },
-                set: function (value) {
-                    return this.setDataValue("ingridients", typeof value === 'object' ? JSON.stringify(value) : value);
-                },
-            },
-
             category_id: {
                 type: DataTypes.TEXT("long"),
                 get: function () {
@@ -30,12 +20,6 @@ module.exports = (sequelize, Sequelize) => {
             },
             description: {
                 type: DataTypes.TEXT("long"),
-                get: function () {
-                    return JSON.parse(this.getDataValue("description" ))
-                },
-                set: function (value) {
-                    return this.setDataValue("description", typeof value === 'object' ? JSON.stringify(value) : value);
-                },
             },
             img_url: {
                 type: DataTypes.STRING,

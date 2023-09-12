@@ -6,10 +6,13 @@ const receiptsRouter = require("./routes/routes");
 const cors = require("cors");
 
 const db = require("./config/db.config");
+const bcrypt = require("bcrypt");
+const {generateToken} = require("./helpers/jwt");
 
 // Нужно только для разработки на локалке, потом удалить
 const Collections = db.collections;
 const Ingridients = db.ingridients;
+const User = db.users;
 const Categories = db.categories;
 //
 
@@ -182,6 +185,21 @@ async function initCollection() {
           description: "Вкусный Кандибобер",
         },
       ]);
+    }
+    const user = await User.findByPk(1);
+    if(!user) {
+      bcrypt.hash('admin123', 10, async (err, hash) => {
+        if (err) throw new Error(err);
+        else {
+          const newUser = await User.create({
+            username: 'admin',
+            email: 'admin@test.com',
+            password: hash,
+          });
+          const token = generateToken({email: 'admin@test.com', id: newUser?.id});
+          newUser.update({token});
+        }
+      });
     }
 
     const category = await Categories.findAll();
