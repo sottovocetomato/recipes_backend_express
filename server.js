@@ -2,10 +2,11 @@ const express = require("express");
 const app = express();
 const port = 3000;
 const path = require("path");
-
+require("./models/index")
 const cors = require("cors");
 
 const db = require("./config/db.config");
+
 const bcrypt = require("bcrypt");
 const { generateToken } = require("./helpers/jwt");
 
@@ -81,8 +82,9 @@ require("./routes/categories.route.")(app);
 
 db.sequelize
   .authenticate()
-  .then(() => {
+  .then(async () => {
     console.log("Connection has been established successfully.");
+
   })
   .catch((error) => {
     console.error("Unable to connect to the database: ", error);
