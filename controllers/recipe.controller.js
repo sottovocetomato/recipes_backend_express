@@ -6,7 +6,7 @@ const Recipe = db.recipes;
 const User = db.users;
 const Categories = db.categories;
 const RecipeSteps = db.recipe_steps;
-const RecipeIngridient = db.recipe_ingridients;
+const RecipeIngridients = db.recipe_ingridients;
 const Ingridients = db.ingridients;
 
 exports.create = async (req, res) => {
@@ -26,13 +26,13 @@ exports.create = async (req, res) => {
 
     let recData = {
       title,
-      ingridients,
+      recipe_ingridients,
       short_dsc,
       recipe_steps,
       category_id,
       img_url,
     };
-    if (!title || !short_dsc || !ingridients || !recipe_steps || !category_id) {
+    if (!title || !short_dsc || !recipe_ingridients || !recipe_steps || !category_id) {
       throw new Error("Not enough data to create a recipe");
     }
 
@@ -48,7 +48,6 @@ exports.create = async (req, res) => {
     });
     const data = await Recipe.create({
       title,
-      ingridients,
       short_dsc,
       category_id,
       img_url: recData.img_url,
@@ -60,7 +59,7 @@ exports.create = async (req, res) => {
     const steps = await RecipeSteps.bulkCreate(recipe_steps, {
       returning: true,
     });
-    const ingrs = await RecipeIngridient.bulkCreate(ingridients, {
+    const ingrs = await RecipeIngridients.bulkCreate(recipe_ingridients, {
       returning: true,
     });
 
@@ -110,7 +109,7 @@ exports.getAllByUser = async (req, res) => {
 
 exports.getById = async (req, res) => {
   const id = req.params.id;
-  await Recipe.findByPk(id, { include: Categories })
+  await Recipe.findByPk(id, { include: [Categories, RecipeIngridients, RecipeSteps] })
     .then((data) => {
       res.status(200).send({ data });
     })
@@ -122,9 +121,11 @@ exports.getById = async (req, res) => {
 exports.update = async (req, res) => {
   try {
     const id = req.params.id;
-    const data = await Recipe.findByPk(id, {});
-    if (!data) throw new Error("Recipe with given id is not found");
-    let recData = req?.body;
+    const recipe = await Recipe.findByPk(id, { include: [Categories, RecipeIngridients, RecipeSteps]});
+    if (!recipe) throw new Error("Recipe with given id is not found");
+
+    let recData = req.body
+
     if (req.files.length) {
       req.files.forEach((file) => {
         const imgPath = appUrl + file.path;
@@ -133,8 +134,17 @@ exports.update = async (req, res) => {
     }
     // mergeObjects(data.dataValues, recData)
     // console.log(data.dataValues, "DATAAAAA");
-    data.update(recData);
-    res.status(200).send({ data });
+    console.log(recipe);
+    recipe.categories.update(recData.category_id);
+    recipe.recipe_ingridients.update(recData.recipe_ingridients);
+    recipe.recipe_steps.update(recData.recipe_steps);
+
+    recipe.update({title:recData.title,
+      short_dsc:recData.short_dsc,
+      category_id:recData.category_id,
+      img_url: recData.img_url,});
+
+    res.status(200).send({ data:recipe });
   } catch (err) {
     res.status(500).json({ message: `${err}` });
   }
