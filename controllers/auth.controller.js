@@ -44,13 +44,13 @@ exports.login = async (req, res) => {
       await existingUser.update({ token });
       delete existingUser.dataValues.password;
       if (match) {
-        res.status(200).json({ data: existingUser });
+        res.status(200).send({ data: existingUser });
         return;
       }
-      res.status(403).json({ error: "passwords do not match" });
+      res.status(403).send({ error: "passwords do not match" });
     });
   } catch (e) {
-    res.status(500).json({ error: `${e.message}` });
+    res.status(500).send({ error: `${e.message}` });
   }
 };
 

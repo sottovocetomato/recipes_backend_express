@@ -80,7 +80,7 @@ exports.getAll = async (req, res) => {
   await Recipe.findAll({
     limit,
     offset,
-    Y,
+    include: [Categories, RecipeIngridient, RecipeSteps]
   })
     .then((data) => {
       res.status(200).send({ data });
@@ -88,6 +88,24 @@ exports.getAll = async (req, res) => {
     .catch((err) => {
       res.status(500).json({ message: `${err}` });
     });
+};
+
+exports.getAllByUser = async (req, res) => {
+  const { limit = 20, offset = 0 } = req.query;
+  await Recipe.findAll({
+    limit,
+    offset,
+    where: {
+      userId: req.params.userId
+    },
+    include: [Categories, RecipeIngridient, RecipeSteps]
+  })
+      .then((data) => {
+        res.status(200).send({ data });
+      })
+      .catch((err) => {
+        res.status(500).json({ message: `${err}` });
+      });
 };
 
 exports.getById = async (req, res) => {
