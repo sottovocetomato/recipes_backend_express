@@ -2,6 +2,7 @@ const db = require("../config/db.config");
 const { appUrl } = require("../helpers/appUrl");
 const { multerUpload } = require("../middleware/multer");
 const { setObjProperty, mergeObjects } = require("../helpers/main");
+const { Op } = require("sequelize");
 const Recipe = db.recipes;
 const User = db.users;
 const Categories = db.categories;
@@ -16,7 +17,7 @@ exports.create = async (req, res) => {
     const {
       title,
       short_dsc,
-      ingridients,
+      recipe_ingridients,
       recipe_steps,
       category_id,
       img_url,
@@ -32,7 +33,13 @@ exports.create = async (req, res) => {
       category_id,
       img_url,
     };
-    if (!title || !short_dsc || !recipe_ingridients || !recipe_steps || !category_id) {
+    if (
+      !title ||
+      !short_dsc ||
+      !recipe_ingridients ||
+      !recipe_steps ||
+      !category_id
+    ) {
       throw new Error("Not enough data to create a recipe");
     }
 
@@ -46,6 +53,7 @@ exports.create = async (req, res) => {
     const user = await User.findOne({
       where: { token },
     });
+    console.log(recipe_steps, "STEP");
     const data = await Recipe.create({
       title,
       short_dsc,
@@ -53,7 +61,7 @@ exports.create = async (req, res) => {
       img_url: recData.img_url,
     });
 
-    const ingrsIds = ingridients.map((el) => el.ingridientId);
+    const ingrsIds = recipe_ingridients.map((el) => el.ingridientId);
     data.addCategories(category_id);
 
     const steps = await RecipeSteps.bulkCreate(recipe_steps, {
@@ -79,7 +87,7 @@ exports.getAll = async (req, res) => {
   await Recipe.findAll({
     limit,
     offset,
-    include: [Categories, RecipeIngridient, RecipeSteps]
+    include: [Categories, RecipeIngridients, RecipeSteps],
   })
     .then((data) => {
       res.status(200).send({ data });
@@ -95,21 +103,23 @@ exports.getAllByUser = async (req, res) => {
     limit,
     offset,
     where: {
-      userId: req.params.userId
+      userId: req.params.userId,
     },
-    include: [Categories, RecipeIngridient, RecipeSteps]
+    include: [Categories, RecipeIngridients, RecipeSteps],
   })
-      .then((data) => {
-        res.status(200).send({ data });
-      })
-      .catch((err) => {
-        res.status(500).json({ message: `${err}` });
-      });
+    .then((data) => {
+      res.status(200).send({ data });
+    })
+    .catch((err) => {
+      res.status(500).json({ message: `${err}` });
+    });
 };
 
 exports.getById = async (req, res) => {
   const id = req.params.id;
-  await Recipe.findByPk(id, { include: [Categories, RecipeIngridients, RecipeSteps] })
+  await Recipe.findByPk(id, {
+    include: [Categories, RecipeIngridients, RecipeSteps],
+  })
     .then((data) => {
       res.status(200).send({ data });
     })
@@ -121,10 +131,12 @@ exports.getById = async (req, res) => {
 exports.update = async (req, res) => {
   try {
     const id = req.params.id;
-    const recipe = await Recipe.findByPk(id, { include: [Categories, RecipeIngridients, RecipeSteps]});
+    const recipe = await Recipe.findByPk(id, {
+      include: [Categories, RecipeIngridients, RecipeSteps],
+    });
     if (!recipe) throw new Error("Recipe with given id is not found");
 
-    let recData = req.body
+    let recData = req.body;
 
     if (req.files.length) {
       req.files.forEach((file) => {
@@ -134,19 +146,86 @@ exports.update = async (req, res) => {
     }
     // mergeObjects(data.dataValues, recData)
     // console.log(data.dataValues, "DATAAAAA");
-    console.log(recipe);
-    recipe.categories.update(recData.category_id);
-    recipe.recipe_ingridients.update(recData.recipe_ingridients);
-    recipe.recipe_steps.update(recData.recipe_steps);
+    // console.log(recipe);
+    const { recipe_steps, recipe_ingridients } = recData;
+    const stepsIds = [];
+    for (const obj of recipe_steps) {
+      const id = parseInt(obj.id);
+      if (!isNaN(id)) {
+        stepsIds.push(obj.id);
+      }
+    }
+    const ingrIds = [];
+    for (const obj of recipe_ingridients) {
+      const id = parseInt(obj.id);
+      if (!isNaN(id)) {
+        stepsIds.push(obj.id);
+      }
+    }
 
-    recipe.update({title:recData.title,
-      short_dsc:recData.short_dsc,
-      category_id:recData.category_id,
-      img_url: recData.img_url,});
+    if (stepsIds.length) {
+      await RecipeSteps.destroy({
+        where: { recipeId: id, id: { [Op.notIn]: stepsIds } },
+      });
+    }
 
-    res.status(200).send({ data:recipe });
+    if (ingrIds.length) {
+      await RecipeIngridients.destroy({
+        where: { recipeId: id, id: { [Op.notIn]: ingrIds } },
+      });
+    }
+
+    const stepsToUpdate = await RecipeSteps.findAll({
+      where: { recipeId: id },
+    });
+    for (const obj of stepsToUpdate) {
+      const updateData = recipe_steps.find((e) => e.id == obj.id);
+      await obj.update(updateData);
+    }
+    recipe_steps.forEach((el) => console.log(el, "EL"));
+    const stepsToCreate = recipe_steps.filter((el) => !el.id);
+    if (stepsToCreate.length) {
+      const createdSteps = await RecipeSteps.bulkCreate(stepsToCreate, {
+        returning: true,
+      });
+      recipe.addRecipe_steps(createdSteps);
+    }
+
+    const ingrsToUpdate = await RecipeIngridients.findAll({
+      where: { recipeId: id },
+    });
+
+    for (const obj of ingrsToUpdate) {
+      const updateData = recipe_ingridients.find((e) => e.id == obj.id);
+      await obj.update(updateData);
+    }
+    const ingrsoCreate = recipe_ingridients.filter((el) => !el.id);
+
+    if (ingrsoCreate.length) {
+      const createdIngrs = await RecipeIngridients.bulkCreate(
+        recipe_ingridients,
+        {
+          returning: true,
+        }
+      );
+      recipe.addRecipe_ingridients(createdIngrs);
+    }
+    recipe.update({
+      title: recData.title,
+      short_dsc: recData.short_dsc,
+      category_id: recData.category_id,
+      img_url: recData.img_url,
+    });
+
+    recipe.setCategories(recData.category_id);
+    // recipe.setRecipe_steps(recipe_steps);
+    // recipe.setRecipe_ingridients(recipe_ingridients);
+    recipe.setIngridients(ingrIds);
+
+    res.status(200).send({ data: recipe });
   } catch (err) {
     res.status(500).json({ message: `${err}` });
+    throw new Error(err);
   }
 };
 

@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const port = 3000;
 const path = require("path");
-require("./models/index")
+require("./models/index");
 const cors = require("cors");
 
 const db = require("./config/db.config");
@@ -84,7 +84,6 @@ db.sequelize
   .authenticate()
   .then(async () => {
     console.log("Connection has been established successfully.");
-
   })
   .catch((error) => {
     console.error("Unable to connect to the database: ", error);
