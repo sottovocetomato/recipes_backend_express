@@ -155,24 +155,25 @@ exports.update = async (req, res) => {
         stepsIds.push(obj.id);
       }
     }
-    const ingrIds = [];
-    for (const obj of recipe_ingridients) {
-      const id = parseInt(obj.id);
-      if (!isNaN(id)) {
-        stepsIds.push(obj.id);
-      }
-    }
 
     if (stepsIds.length) {
       await RecipeSteps.destroy({
         where: { recipeId: id, id: { [Op.notIn]: stepsIds } },
-      });
+      }).catch((e) => Promise.reject(e));
+    }
+
+    const ingrIds = [];
+    for (const obj of recipe_ingridients) {
+      const id = parseInt(obj.id);
+      if (!isNaN(id)) {
+        ingrIds.push(obj.id);
+      }
     }
 
     if (ingrIds.length) {
       await RecipeIngridients.destroy({
         where: { recipeId: id, id: { [Op.notIn]: ingrIds } },
-      });
+      }).catch((e) => Promise.reject(e));
     }
 
     const stepsToUpdate = await RecipeSteps.findAll({
@@ -180,14 +181,15 @@ exports.update = async (req, res) => {
     });
     for (const obj of stepsToUpdate) {
       const updateData = recipe_steps.find((e) => e.id == obj.id);
-      await obj.update(updateData);
+      await obj.update(updateData).catch((e) => Promise.reject(e));
     }
     recipe_steps.forEach((el) => console.log(el, "EL"));
     const stepsToCreate = recipe_steps.filter((el) => !el.id);
+
     if (stepsToCreate.length) {
       const createdSteps = await RecipeSteps.bulkCreate(stepsToCreate, {
         returning: true,
-      });
+      }).catch((e) => Promise.reject(e));
       recipe.addRecipe_steps(createdSteps);
     }
 
@@ -197,35 +199,35 @@ exports.update = async (req, res) => {
 
     for (const obj of ingrsToUpdate) {
       const updateData = recipe_ingridients.find((e) => e.id == obj.id);
-      await obj.update(updateData);
+      await obj.update(updateData).catch((e) => Promise.reject(e));
     }
-    const ingrsoCreate = recipe_ingridients.filter((el) => !el.id);
+    const ingrsToCreate = recipe_ingridients.filter((el) => !el.id);
 
-    if (ingrsoCreate.length) {
-      const createdIngrs = await RecipeIngridients.bulkCreate(
-        recipe_ingridients,
-        {
-          returning: true,
-        }
-      );
+    if (ingrsToCreate.length) {
+      const createdIngrs = await RecipeIngridients.bulkCreate(ingrsToCreate, {
+        returning: true,
+      }).catch((e) => Promise.reject(e));
       recipe.addRecipe_ingridients(createdIngrs);
     }
-    recipe.update({
-      title: recData.title,
-      short_dsc: recData.short_dsc,
-      category_id: recData.category_id,
-      img_url: recData.img_url,
-    });
+    recipe
+      .update({
+        title: recData.title,
+        short_dsc: recData.short_dsc,
+        category_id: recData.category_id,
+        img_url: recData.img_url,
+      })
+      .catch((e) => Promise.reject(e));
 
     recipe.setCategories(recData.category_id);
     // recipe.setRecipe_steps(recipe_steps);
     // recipe.setRecipe_ingridients(recipe_ingridients);
-    recipe.setIngridients(ingrIds);
+    recipe.addIngridients(recipe_ingridients.map((el) => +el.ingridientId));
 
     res.status(200).send({ data: recipe });
   } catch (err) {
     res.status(500).json({ message: `${err}` });
-    throw new Error(err);
+    Promise.reject(err);
+    // throw new Error(err);
   }
 };
 

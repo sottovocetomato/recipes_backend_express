@@ -25,13 +25,9 @@ db.recipe_ingridients.belongsTo(db.recipes);
 db.recipes.hasMany(db.recipe_ingridients);
 
 db.ingridients.belongsToMany(db.recipes, {
-  foreignKey: "recipeId",
-  as: "Recipes",
   through: "RecipesIngridients",
 });
 
 db.recipes.belongsToMany(db.ingridients, {
-  foreignKey: "ingridientId",
-  as: "Ingridients",
   through: "RecipesIngridients",
 });
