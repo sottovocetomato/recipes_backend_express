@@ -67,13 +67,17 @@ exports.me = async (req, res) => {
       .then((user) => {
         if (user) {
           res.status(200).send({ data: user });
+        } else {
+          res
+            .status(500)
+            .send({ message: "TokenExpiredError: User not found" });
         }
       })
       .catch((error) => {
-        throw new Error(error);
+        Promise.reject(error);
       });
   } catch (error) {
-    res.status(500).json({ error: error });
+    res.status(500).send({ message: error });
   }
 };
 

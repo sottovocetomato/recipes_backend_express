@@ -14,6 +14,10 @@ exports.create = async (req, res) => {
   try {
     let token = req?.headers?.authorization;
     token = token.split(" ")[1];
+    const user = await User.findOne({
+      where: { token },
+    });
+
     const {
       title,
       short_dsc,
@@ -50,26 +54,24 @@ exports.create = async (req, res) => {
       });
     }
     // console.log(recData, "recDataAAAAAAAAAAAAAAAA");
-    const user = await User.findOne({
-      where: { token },
-    });
-    console.log(recipe_steps, "STEP");
+
+    // console.log(recipe_steps, "STEP");
     const data = await Recipe.create({
       title,
       short_dsc,
       category_id,
       img_url: recData.img_url,
-    });
+    }).catch((e) => Promise.reject(e));
 
     const ingrsIds = recipe_ingridients.map((el) => el.ingridientId);
     data.addCategories(category_id);
 
     const steps = await RecipeSteps.bulkCreate(recipe_steps, {
       returning: true,
-    });
+    }).catch((e) => Promise.reject(e));
     const ingrs = await RecipeIngridients.bulkCreate(recipe_ingridients, {
       returning: true,
-    });
+    }).catch((e) => Promise.reject(e));
 
     data.addRecipe_steps(steps);
     data.addRecipe_ingridients(ingrs);
