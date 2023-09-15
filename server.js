@@ -196,6 +196,7 @@ async function initCollection() {
             username: "admin",
             email: "admin@test.com",
             password: hash,
+            role: "admin",
           });
           const token = generateToken({
             email: "admin@test.com",
