@@ -3,6 +3,7 @@ const { checkToken } = require("../middleware/checkToken");
 const { verifySignUp } = require("../middleware/verifySignUp");
 const { multerUpload } = require("../middleware/multer");
 const multer = require("multer");
+
 const upload = multer();
 
 module.exports = function (app) {
@@ -11,6 +12,7 @@ module.exports = function (app) {
     [checkToken, multerUpload("recipes").any()],
     recipeCntrlr.create
   );
+  app.post("/api/recipes/filter", recipeCntrlr.getAllFilter);
 
   app.get("/api/recipes/:id", recipeCntrlr.getById);
   app.get("/api/recipes/user/:userId",checkToken,recipeCntrlr.getAllByUser);

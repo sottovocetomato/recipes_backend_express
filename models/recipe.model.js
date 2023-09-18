@@ -32,9 +32,9 @@ module.exports = (sequelize, Sequelize) => {
         defaultValue: "new",
       },
     },
-    {
-      timestamps: false,
-    }
+    // {
+    //   timestamps: false,
+    // }
   );
 
   return Recipe;

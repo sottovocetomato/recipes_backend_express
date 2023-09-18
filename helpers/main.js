@@ -21,6 +21,10 @@ function emptyOrRows(rows) {
   return rows;
 }
 
+function setOrder(order) {
+  console.log(Object.keys(order).map(key => [key, order[key]]));
+  return Object.keys(order).map(key => [key, order[key]])
+}
 function setObjProperty(obj, path, value) {
   let tempObj = obj;
   let names = path
@@ -68,5 +72,6 @@ module.exports = {
   emptyOrRows,
   getPaginationMeta,
   setObjProperty,
-  mergeObjects
+  mergeObjects,
+  setOrder
 };

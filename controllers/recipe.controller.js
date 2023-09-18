@@ -1,8 +1,9 @@
 const db = require("../config/db.config");
 const { appUrl } = require("../helpers/appUrl");
 const { multerUpload } = require("../middleware/multer");
-const { setObjProperty, mergeObjects } = require("../helpers/main");
+const { setObjProperty, mergeObjects, setOrder } = require("../helpers/main");
 const { Op } = require("sequelize");
+const {parseFilter} = require("../helpers/filter");
 const Recipe = db.recipes;
 const User = db.users;
 const Categories = db.categories;
@@ -85,10 +86,16 @@ exports.create = async (req, res) => {
 };
 
 exports.getAll = async (req, res) => {
-  const { limit = 20, offset = 0 } = req.query;
+  let { limit = 20, offset = 0, order } = req.query;
+
+  if(order) {
+    order = setOrder(order)
+  }
+  console.log(order, "ORDER")
   await Recipe.findAll({
     limit,
     offset,
+    order: order ? order : null,
     include: [Categories, RecipeIngridients, RecipeSteps],
   })
     .then((data) => {
@@ -128,6 +135,31 @@ exports.getById = async (req, res) => {
     .catch((err) => {
       res.status(500).json({ message: `${err}` });
     });
+};
+
+exports.getAllFilter = async (req, res) => {
+  const { limit = 20, offset = 0 } = req.query;
+  const  { filters = {} } = req.body;
+
+  await Recipe.findAll({
+
+    // where: parseFilter(filters),
+    where: {'$Ingridients.id$': 5},
+    include: {
+      model: Ingridients,
+      // where: parseFilter(filters)
+      required: true
+    },
+    limit,
+    offset,
+  })
+      .then((data) => {
+        res.status(200).send({ data });
+      })
+      .catch((err) => {
+        console.log(err, "error");
+        res.status(500).json({ error: `${err}` });
+      });
 };
 
 exports.update = async (req, res) => {
