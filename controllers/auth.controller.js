@@ -77,7 +77,7 @@ exports.me = async (req, res) => {
         Promise.reject(error);
       });
   } catch (error) {
-    res.status(500).send({ message: error });
+    res.status(500).json({ message: error });
   }
 };
 
