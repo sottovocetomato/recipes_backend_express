@@ -1,8 +1,9 @@
 const db = require("../config/db.config");
 const Ingridient = db.ingridients;
+const Recipe = db.recipes;
 const { Op } = require("sequelize");
 const { parseFilter } = require("../helpers/filter");
-const { getPaginationMeta } = require("../helpers/main");
+const { getPaginationMeta, getOffset } = require("../helpers/main");
 const { multerUpload } = require("../middleware/multer");
 const { appUrl } = require("../helpers/appUrl");
 
@@ -22,11 +23,9 @@ exports.create = async (req, res) => {
 exports.getAll = async (req, res) => {
   console.log(req.query, "REQ QUERY");
   let { limit = 20, page = 1 } = req.query;
-  limit = parseInt(limit);
-  page = parseInt(page);
   await Ingridient.findAndCountAll({
     limit: limit,
-    offset: limit * --page,
+    offset: getOffset(limit, page),
   })
     .then(({ count, rows: data }) => {
       const _meta = getPaginationMeta({ limit, page, count });
@@ -37,11 +36,38 @@ exports.getAll = async (req, res) => {
     });
 };
 
+exports.getAllRecipes = async (req, res) => {
+  console.log(req.query, "REQ QUERY");
+  let { limit = 20, page = 1 } = req.query;
+  const id = req.params.id;
+  await Recipe.findAll({
+    include: [
+      {
+        model: Ingridient,
+        where: {
+          id,
+        },
+        through: {
+          attributes: [],
+        },
+      },
+    ],
+    limit: limit,
+    offset: getOffset(limit, page),
+  })
+    .then((data) => {
+      res.status(200).send({ data });
+    })
+    .catch((err) => {
+      console.log(err, "error");
+      res.status(500).json({ error: `${err}` });
+    });
+};
+
 exports.getAllFilter = async (req, res) => {
   const { limit = 20, offset = 0, filters = {} } = req.body;
 
   await Ingridient.findAll({
-
     where: parseFilter(filters),
     limit,
     offset,
@@ -73,7 +99,7 @@ exports.update = async (req, res) => {
     console.log(data, "DATA");
     console.log(req?.body, "req?.body?.data");
     if (!data) throw new Error("Ingridient with given id is not found");
-    await data.update(req?.body).then(data => res.status(200).json({ data }))
+    await data.update(req?.body).then((data) => res.status(200).json({ data }));
   } catch (e) {
     res.status(500).json({ error: e });
   }
@@ -102,7 +128,7 @@ exports.delete = async (req, res) => {
     where: { id },
   })
     .then(() => {
-      res.status(200).send({message: "Ингредиент удалён!"});
+      res.status(200).send({ message: "Ингредиент удалён!" });
     })
     .catch((err) => {
       res.status(500).json({ error: err });

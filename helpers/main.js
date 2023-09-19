@@ -1,7 +1,11 @@
 const { appUrl } = require("./appUrl");
 
-function getOffset(currentPage = 1, listPerPage) {
-  return (currentPage - 1) * [listPerPage];
+// function getOffset(currentPage = 1, listPerPage) {
+//   return (currentPage - 1) * [listPerPage];
+// }
+
+function getOffset(limit, page = 1) {
+  return parseInt(limit) * (parseInt(page) - 1);
 }
 
 function getPaginationMeta({ limit = 20, page = 0, count = 0 } = {}) {
@@ -22,8 +26,8 @@ function emptyOrRows(rows) {
 }
 
 function setOrder(order) {
-  console.log(Object.keys(order).map(key => [key, order[key]]));
-  return Object.keys(order).map(key => [key, order[key]])
+  console.log(Object.keys(order).map((key) => [key, order[key]]));
+  return Object.keys(order).map((key) => [key, order[key]]);
 }
 function setObjProperty(obj, path, value) {
   let tempObj = obj;
@@ -41,23 +45,26 @@ function setObjProperty(obj, path, value) {
 }
 
 function mergeObjects(mainObj, mergeObj) {
+  Object.keys(mergeObj).forEach((key) => {
+    console.log(key, "KEY");
+    if (!mainObj.hasOwnProperty(key)) return;
+    if (isJsonString(mainObj[key])) mainObj[key] = JSON.parse(mainObj[key]);
+    const isObj = typeof mainObj[key] === "object";
+    const hasNested = Object.values(mainObj[key]).some(
+      (el) => typeof el === "object"
+    );
 
-  Object.keys(mergeObj).forEach(key => {
-    console.log(key, "KEY")
-    if(!mainObj.hasOwnProperty(key)) return
-    if(isJsonString(mainObj[key])) mainObj[key] = JSON.parse(mainObj[key])
-    const isObj = typeof mainObj[key] === 'object';
-    const hasNested = Object.values(mainObj[key]).some(el => typeof el === 'object');
-
-    if(isObj && hasNested) {
-      mergeObjects(mainObj[key], mergeObj[key])
-    } else if(isObj && !hasNested) {
-      mainObj[key] = Array.isArray( mainObj[key]) ? mergeObj[key] : {...mainObj[key], ...mergeObj[key]}
+    if (isObj && hasNested) {
+      mergeObjects(mainObj[key], mergeObj[key]);
+    } else if (isObj && !hasNested) {
+      mainObj[key] = Array.isArray(mainObj[key])
+        ? mergeObj[key]
+        : { ...mainObj[key], ...mergeObj[key] };
     } else {
-      mainObj[key] = mergeObj[key]
+      mainObj[key] = mergeObj[key];
     }
-    console.log(mainObj[key], "ainObj[key]")
-  })
+    console.log(mainObj[key], "ainObj[key]");
+  });
 }
 function isJsonString(str) {
   try {
@@ -73,5 +80,5 @@ module.exports = {
   getPaginationMeta,
   setObjProperty,
   mergeObjects,
-  setOrder
+  setOrder,
 };

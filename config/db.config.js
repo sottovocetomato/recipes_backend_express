@@ -12,7 +12,7 @@ require("dotenv").config();
 //     idle: 10000,
 //   },
 // };
-const { Sequelize, DataTypes  } = require("sequelize");
+const { Sequelize, DataTypes } = require("sequelize");
 const fs = require("fs");
 const path = require("path");
 const basename = path.basename(__filename);
@@ -33,9 +33,9 @@ const sequelize = new Sequelize(
       acquire: 30000,
       idle: 10000,
     },
-    define: {
-      timestamps: false,
-    },
+    // define: {
+    //   timestamps: false,
+    // },
   }
 );
 // fs
@@ -62,9 +62,7 @@ const sequelize = new Sequelize(
 //     }
 // });
 
-
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
-
 
 module.exports = db;

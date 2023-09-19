@@ -1,15 +1,20 @@
 const db = require("../config/db.config");
 const { appUrl } = require("../helpers/appUrl");
 const { multerUpload } = require("../middleware/multer");
-const { setObjProperty, mergeObjects, setOrder } = require("../helpers/main");
+const {
+  setObjProperty,
+  mergeObjects,
+  setOrder,
+  getOffset,
+} = require("../helpers/main");
 const { Op } = require("sequelize");
-const {parseFilter} = require("../helpers/filter");
+const { parseFilter } = require("../helpers/filter");
 const Recipe = db.recipes;
 const User = db.users;
-const Categories = db.categories;
-const RecipeSteps = db.recipe_steps;
-const RecipeIngridients = db.recipe_ingridients;
-const Ingridients = db.ingridients;
+const Category = db.categories;
+const RecipeStep = db.recipe_steps;
+const RecipeIngridient = db.recipe_ingridients;
+const Ingridient = db.ingridients;
 
 exports.create = async (req, res) => {
   try {
@@ -67,10 +72,10 @@ exports.create = async (req, res) => {
     const ingrsIds = recipe_ingridients.map((el) => el.ingridientId);
     data.addCategories(category_id);
 
-    const steps = await RecipeSteps.bulkCreate(recipe_steps, {
+    const steps = await RecipeStep.bulkCreate(recipe_steps, {
       returning: true,
     }).catch((e) => Promise.reject(e));
-    const ingrs = await RecipeIngridients.bulkCreate(recipe_ingridients, {
+    const ingrs = await RecipeIngridient.bulkCreate(recipe_ingridients, {
       returning: true,
     }).catch((e) => Promise.reject(e));
 
@@ -86,17 +91,18 @@ exports.create = async (req, res) => {
 };
 
 exports.getAll = async (req, res) => {
-  let { limit = 20, offset = 0, order } = req.query;
+  let { limit = 20, page = 1, order } = req.query;
 
-  if(order) {
-    order = setOrder(order)
+  if (order) {
+    order = setOrder(order);
   }
-  console.log(order, "ORDER")
+  console.log(order, "ORDER");
+  console.log(limit, "limit");
   await Recipe.findAll({
-    limit,
-    offset,
+    limit: parseInt(limit),
+    offset: getOffset(limit, page),
     order: order ? order : null,
-    include: [Categories, RecipeIngridients, RecipeSteps],
+    include: [Category, RecipeIngridient, RecipeStep],
   })
     .then((data) => {
       res.status(200).send({ data });
@@ -107,14 +113,14 @@ exports.getAll = async (req, res) => {
 };
 
 exports.getAllByUser = async (req, res) => {
-  const { limit = 20, offset = 0 } = req.query;
+  const { limit = 20, page = 1 } = req.query;
   await Recipe.findAll({
     limit,
-    offset,
+    offset: getOffset(limit, page),
     where: {
       userId: req.params.userId,
     },
-    include: [Categories, RecipeIngridients, RecipeSteps],
+    include: [Category, RecipeIngridient, RecipeStep],
   })
     .then((data) => {
       res.status(200).send({ data });
@@ -127,7 +133,7 @@ exports.getAllByUser = async (req, res) => {
 exports.getById = async (req, res) => {
   const id = req.params.id;
   await Recipe.findByPk(id, {
-    include: [Categories, RecipeIngridients, RecipeSteps],
+    include: [Category, RecipeIngridient, RecipeStep],
   })
     .then((data) => {
       res.status(200).send({ data });
@@ -138,35 +144,39 @@ exports.getById = async (req, res) => {
 };
 
 exports.getAllFilter = async (req, res) => {
-  const { limit = 20, offset = 0 } = req.query;
-  const  { filters = {} } = req.body;
+  const { limit = 20, page = 1 } = req.query;
+  const { filters = {} } = req.body;
 
   await Recipe.findAll({
-
     // where: parseFilter(filters),
-    where: {'$Ingridients.id$': 5},
-    include: {
-      model: Ingridients,
-      // where: parseFilter(filters)
-      required: true
-    },
+    include: [
+      {
+        model: Ingridient,
+        where: {
+          id: 1,
+        },
+        through: {
+          attributes: [],
+        },
+      },
+    ],
     limit,
-    offset,
+    offset: getOffset(limit, page),
   })
-      .then((data) => {
-        res.status(200).send({ data });
-      })
-      .catch((err) => {
-        console.log(err, "error");
-        res.status(500).json({ error: `${err}` });
-      });
+    .then((data) => {
+      res.status(200).send({ data });
+    })
+    .catch((err) => {
+      console.log(err, "error");
+      res.status(500).json({ error: `${err}` });
+    });
 };
 
 exports.update = async (req, res) => {
   try {
     const id = req.params.id;
     const recipe = await Recipe.findByPk(id, {
-      include: [Categories, RecipeIngridients, RecipeSteps],
+      include: [Category, RecipeIngridient, RecipeStep],
     });
     if (!recipe) throw new Error("Recipe with given id is not found");
 
@@ -191,7 +201,7 @@ exports.update = async (req, res) => {
     }
 
     if (stepsIds.length) {
-      await RecipeSteps.destroy({
+      await RecipeStep.destroy({
         where: { recipeId: id, id: { [Op.notIn]: stepsIds } },
       }).catch((e) => Promise.reject(e));
     }
@@ -205,12 +215,12 @@ exports.update = async (req, res) => {
     }
 
     if (ingrIds.length) {
-      await RecipeIngridients.destroy({
+      await RecipeIngridient.destroy({
         where: { recipeId: id, id: { [Op.notIn]: ingrIds } },
       }).catch((e) => Promise.reject(e));
     }
 
-    const stepsToUpdate = await RecipeSteps.findAll({
+    const stepsToUpdate = await RecipeStep.findAll({
       where: { recipeId: id },
     });
     for (const obj of stepsToUpdate) {
@@ -221,13 +231,13 @@ exports.update = async (req, res) => {
     const stepsToCreate = recipe_steps.filter((el) => !el.id);
 
     if (stepsToCreate.length) {
-      const createdSteps = await RecipeSteps.bulkCreate(stepsToCreate, {
+      const createdSteps = await RecipeStep.bulkCreate(stepsToCreate, {
         returning: true,
       }).catch((e) => Promise.reject(e));
       recipe.addRecipe_steps(createdSteps);
     }
 
-    const ingrsToUpdate = await RecipeIngridients.findAll({
+    const ingrsToUpdate = await RecipeIngridient.findAll({
       where: { recipeId: id },
     });
 
@@ -238,7 +248,7 @@ exports.update = async (req, res) => {
     const ingrsToCreate = recipe_ingridients.filter((el) => !el.id);
 
     if (ingrsToCreate.length) {
-      const createdIngrs = await RecipeIngridients.bulkCreate(ingrsToCreate, {
+      const createdIngrs = await RecipeIngridient.bulkCreate(ingrsToCreate, {
         returning: true,
       }).catch((e) => Promise.reject(e));
       recipe.addRecipe_ingridients(createdIngrs);
