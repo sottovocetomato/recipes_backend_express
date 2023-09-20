@@ -96,8 +96,7 @@ exports.getAll = async (req, res) => {
   if (order) {
     order = setOrder(order);
   }
-  console.log(order, "ORDER");
-  console.log(limit, "limit");
+
   await Recipe.findAll({
     limit: parseInt(limit),
     offset: getOffset(limit, page),
@@ -160,7 +159,7 @@ exports.getAllFilter = async (req, res) => {
         },
       },
     ],
-    limit,
+    limit: parseInt(limit),
     offset: getOffset(limit, page),
   })
     .then((data) => {

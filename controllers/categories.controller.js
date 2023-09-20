@@ -1,19 +1,18 @@
 const db = require("../config/db.config");
-const Categories = db.categories;
+const Category = db.categories;
+const Recipe = db.recipes;
 const { Op } = require("sequelize");
 const { parseFilter } = require("../helpers/filter");
-const { getPaginationMeta } = require("../helpers/main");
+const { getPaginationMeta, getOffset } = require("../helpers/main");
 const { multerUpload } = require("../middleware/multer");
 const { appUrl } = require("../helpers/appUrl");
 
 exports.getAll = async (req, res) => {
   console.log(req.query, "REQ QUERY");
   let { limit = 20, page = 1 } = req.query;
-  limit = parseInt(limit);
-  page = parseInt(page);
-  await Categories.findAndCountAll({
-    limit: limit,
-    offset: limit * --page,
+  await Category.findAndCountAll({
+    limit: parseInt(limit),
+    offset: getOffset(limit, page),
   })
     .then(({ count, rows: data }) => {
       const _meta = getPaginationMeta({ limit, page, count });
@@ -25,11 +24,12 @@ exports.getAll = async (req, res) => {
 };
 
 exports.getAllFilter = async (req, res) => {
-  const { limit = 20, offset = 0, filters = {} } = req.body;
-  await Categories.findAll({
+  let { limit = 20, page = 1 } = req.query;
+  const { filters = {} } = req.body;
+  await Category.findAll({
     where: parseFilter(filters),
-    limit,
-    offset,
+    limit: parseInt(limit),
+    offset: getOffset(limit, page),
   })
     .then((data) => {
       res.status(200).send({ data });
@@ -42,11 +42,39 @@ exports.getAllFilter = async (req, res) => {
 
 exports.getById = async (req, res) => {
   const id = req.params.id;
-  await Categories.findByPk(id, {})
+  await Category.findByPk(id, {})
     .then((data) => {
       res.status(200).send({ data });
     })
     .catch((err) => {
       res.status(500).json({ error: err });
+    });
+};
+
+exports.getAllRecipes = async (req, res) => {
+  console.log(req.query, "REQ QUERY");
+  let { limit = 20, page = 1 } = req.query;
+  const id = req.params.id;
+  await Recipe.findAll({
+    include: [
+      {
+        model: Category,
+        where: {
+          id,
+        },
+        through: {
+          attributes: [],
+        },
+      },
+    ],
+    limit: parseInt(limit),
+    offset: getOffset(limit, page),
+  })
+    .then((data) => {
+      res.status(200).send({ data });
+    })
+    .catch((err) => {
+      console.log(err, "error");
+      res.status(500).json({ error: `${err}` });
     });
 };
