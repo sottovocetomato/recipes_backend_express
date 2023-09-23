@@ -132,7 +132,14 @@ exports.getAllByUser = async (req, res) => {
 exports.getById = async (req, res) => {
   const id = req.params.id;
   await Recipe.findByPk(id, {
-    include: [Category, RecipeIngridient, RecipeStep],
+    include: [
+      Category,
+      RecipeStep,
+      {
+        model: RecipeIngridient,
+        include: [Ingridient],
+      },
+    ],
   })
     .then((data) => {
       res.status(200).send({ data });
