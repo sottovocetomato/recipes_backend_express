@@ -24,6 +24,9 @@ db.recipes.hasMany(db.recipe_steps);
 db.recipe_ingridients.belongsTo(db.recipes);
 db.recipes.hasMany(db.recipe_ingridients);
 
+db.recipe_ingridients.belongsTo(db.ingridients);
+db.ingridients.hasMany(db.recipe_ingridients);
+
 db.ingridients.belongsToMany(db.recipes, {
   through: "RecipesIngridients",
 });

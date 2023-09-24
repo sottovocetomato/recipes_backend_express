@@ -46,8 +46,8 @@ exports.create = async (req, res) => {
     if (
       !title ||
       !short_dsc ||
-      !recipe_ingridients ||
-      !recipe_steps ||
+      !recipe_ingridients.length ||
+      !recipe_steps.length ||
       !category_id
     ) {
       throw new Error("Not enough data to create a recipe");
@@ -75,14 +75,27 @@ exports.create = async (req, res) => {
     const steps = await RecipeStep.bulkCreate(recipe_steps, {
       returning: true,
     }).catch((e) => Promise.reject(e));
-    const ingrs = await RecipeIngridient.bulkCreate(recipe_ingridients, {
-      returning: true,
-    }).catch((e) => Promise.reject(e));
+    // const ingrs = await RecipeIngridient.bulkCreate(recipe_ingridients, {
+    //   returning: true,
+    // }).catch((e) => Promise.reject(e));
 
+    for (const el of recipe_ingridients) {
+      console.log(el);
+      await RecipeIngridient.create(el, {
+        returning: true,
+      })
+        .then((ingr) => {
+          console.log(ingr);
+          ingr.setIngridient(el.ingridientId);
+          data.addRecipe_ingridients(ingr);
+        })
+        .catch((e) => Promise.reject(e));
+    }
+
+    // console.log(ingrs[0]);
     data.addRecipe_steps(steps);
-    data.addRecipe_ingridients(ingrs);
     data.addIngridients(ingrsIds);
-    data.setUser(user.id);
+    data.setUser(user?.id);
 
     res.status(200).send(data);
   } catch (err) {
@@ -137,7 +150,7 @@ exports.getById = async (req, res) => {
       RecipeStep,
       {
         model: RecipeIngridient,
-        include: [Ingridient],
+        include: [{ model: Ingridient }],
       },
     ],
   })
@@ -254,10 +267,20 @@ exports.update = async (req, res) => {
     const ingrsToCreate = recipe_ingridients.filter((el) => !el.id);
 
     if (ingrsToCreate.length) {
-      const createdIngrs = await RecipeIngridient.bulkCreate(ingrsToCreate, {
-        returning: true,
-      }).catch((e) => Promise.reject(e));
-      recipe.addRecipe_ingridients(createdIngrs);
+      // const createdIngrs = await RecipeIngridient.bulkCreate(ingrsToCreate, {
+      //   returning: true,
+      // }).catch((e) => Promise.reject(e));
+      for (const el of ingrsToCreate) {
+        console.log(el);
+        await RecipeIngridient.create(el, {
+          returning: true,
+        })
+          .then((ingr) => {
+            ingr.setIngridient(el.ingridientId);
+            recipe.addRecipe_ingridients(ingr);
+          })
+          .catch((e) => Promise.reject(e));
+      }
     }
     recipe
       .update({
