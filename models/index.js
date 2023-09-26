@@ -24,10 +24,14 @@ db.recipes.hasMany(db.recipe_steps);
 db.recipe_ingridients.belongsTo(db.recipes);
 db.recipes.hasMany(db.recipe_ingridients);
 
-db.recipe_ingridients.belongsTo(db.collections);
-db.collections.hasOne(db.recipe_ingridients, {
-  foreignKey: 'unit_cid'
-});
+// db.recipe_ingridients.belongsTo(db.collections, {
+//   foreignKey: "unit_cid",
+//   as: "units",
+// });
+// db.collections.hasOne(db.recipe_ingridients, {
+//   foreignKey: "unit_cid",
+//   as: "units",
+// });
 
 db.recipe_ingridients.belongsTo(db.ingridients);
 db.ingridients.hasMany(db.recipe_ingridients);

@@ -15,6 +15,7 @@ const Category = db.categories;
 const RecipeStep = db.recipe_steps;
 const RecipeIngridient = db.recipe_ingridients;
 const Ingridient = db.ingridients;
+const Collection = db.collections;
 
 exports.create = async (req, res) => {
   try {
@@ -87,6 +88,7 @@ exports.create = async (req, res) => {
         .then((ingr) => {
           console.log(ingr);
           ingr.setIngridient(el.ingridientId);
+          ingr.setCollection(el.unit_cid);
           data.addRecipe_ingridients(ingr);
         })
         .catch((e) => Promise.reject(e));
@@ -150,7 +152,15 @@ exports.getById = async (req, res) => {
       RecipeStep,
       {
         model: RecipeIngridient,
-        include: [{ model: Ingridient }],
+        include: [
+          { model: Ingridient, attributes: ["title"] },
+          // {
+          //   model: Collection,
+          //   as: "units",
+          //   attributes: ["title"],
+          //   where: { collection: "units" },
+          // },
+        ],
       },
     ],
   })
@@ -277,6 +287,7 @@ exports.update = async (req, res) => {
         })
           .then((ingr) => {
             ingr.setIngridient(el.ingridientId);
+            ingr.setCollection(el.unit_cid);
             recipe.addRecipe_ingridients(ingr);
           })
           .catch((e) => Promise.reject(e));
