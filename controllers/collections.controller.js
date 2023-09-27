@@ -26,7 +26,8 @@ exports.getAll = async (req, res) => {
 
 exports.getAllFilter = async (req, res) => {
   const { limit = 20, offset = 0 } = req.query;
-  const { filters = {}, attributes = [] } = req.body;
+  const { filters = {}, attributes = null } = req.body;
+  console.log(filters, "FILTERS");
   await Collection.findAll({
     where: parseFilter(filters),
     attributes,

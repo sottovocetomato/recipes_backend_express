@@ -88,7 +88,7 @@ exports.create = async (req, res) => {
         .then((ingr) => {
           console.log(ingr);
           ingr.setIngridient(el.ingridientId);
-          ingr.setCollection(el.unit_cid);
+          // ingr.setCollection(el.unit_cid);
           data.addRecipe_ingridients(ingr);
         })
         .catch((e) => Promise.reject(e));
@@ -287,7 +287,7 @@ exports.update = async (req, res) => {
         })
           .then((ingr) => {
             ingr.setIngridient(el.ingridientId);
-            ingr.setCollection(el.unit_cid);
+            // ingr.setCollection(el.unit_cid);
             recipe.addRecipe_ingridients(ingr);
           })
           .catch((e) => Promise.reject(e));
