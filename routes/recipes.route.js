@@ -13,9 +13,10 @@ module.exports = function (app) {
     recipeCntrlr.create
   );
   app.post("/api/recipes/filter", recipeCntrlr.getAllFilter);
+  app.post("/api/recipes/favorite", recipeCntrlr.addFavorite());
 
   app.get("/api/recipes/:id", recipeCntrlr.getById);
-  app.get("/api/recipes/user/:userId",checkToken,recipeCntrlr.getAllByUser);
+  app.get("/api/recipes/user/:userId", checkToken, recipeCntrlr.getAllByUser);
 
   app.get("/api/recipes", recipeCntrlr.getAll);
   app.patch(

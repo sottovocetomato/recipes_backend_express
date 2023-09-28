@@ -15,6 +15,7 @@ const Category = db.categories;
 const RecipeStep = db.recipe_steps;
 const RecipeIngridient = db.recipe_ingridients;
 const Ingridient = db.ingridients;
+const FavoriteRecipe = db.favorite_recipes;
 const Collection = db.collections;
 
 exports.create = async (req, res) => {
@@ -351,4 +352,15 @@ exports.uploadImage = async (req, res) => {
   } catch (e) {
     res.status(500).json({ error: `${e}` });
   }
+};
+
+exports.addFavorite = async (req, res) => {
+  const { userId, recipeId } = req.body;
+  await FavoriteRecipe.create({ userId, recipeId })
+    .then(() => {
+      res.status(200).send("Recipe has faved!");
+    })
+    .catch((err) => {
+      res.status(500).json({ message: `${err}` });
+    });
 };
