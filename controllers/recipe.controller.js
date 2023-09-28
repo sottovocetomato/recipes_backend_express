@@ -354,11 +354,42 @@ exports.uploadImage = async (req, res) => {
   }
 };
 
-exports.addFavorite = async (req, res) => {
+exports.addFavoriteRecipe = async (req, res) => {
+  try {
+    const { userId, recipeId } = req.body;
+    const fav = await FavoriteRecipe.findOne({
+      where: { userId, recipeId },
+    });
+    if (fav) {
+      await fav.destroy().then(() => {
+        res.status(200).send("Recipe has been unfaved!");
+      });
+    } else {
+      await FavoriteRecipe.create({ userId, recipeId }).then(() => {
+        res.status(200).send("Recipe has been faved!");
+      });
+    }
+  } catch (err) {
+    res.status(500).json({ message: `${err}` });
+  }
+};
+
+exports.getFavoriteRecipe = async (req, res) => {
   const { userId, recipeId } = req.body;
-  await FavoriteRecipe.create({ userId, recipeId })
-    .then(() => {
-      res.status(200).send("Recipe has faved!");
+  await FavoriteRecipe.findOne({ where: { userId, recipeId } })
+    .then((recipe) => {
+      res.status(200).send({ data: recipe });
+    })
+    .catch((err) => {
+      res.status(500).json({ message: `${err}` });
+    });
+};
+
+exports.getAllFavoriteRecipes = async (req, res) => {
+  const { userId } = req.body;
+  await FavoriteRecipe.findAll({ where: { userId } })
+    .then((recipe) => {
+      res.status(200).send({ data: recipe });
     })
     .catch((err) => {
       res.status(500).json({ message: `${err}` });
