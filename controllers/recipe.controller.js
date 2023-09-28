@@ -150,6 +150,7 @@ exports.getById = async (req, res) => {
     include: [
       Category,
       RecipeStep,
+      { model: User, attributes: ["username", "user_img"] },
       {
         model: RecipeIngridient,
         include: [
