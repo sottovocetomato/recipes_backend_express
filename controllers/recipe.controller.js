@@ -407,12 +407,15 @@ exports.addToLikes = async (req, res) => {
     const fav = await RecipeLike.findOne({
       where: { userId, recipeId },
     });
+    const recipe = await Recipe.findByPk(recipeId);
     if (fav) {
       await fav.destroy().then(() => {
+        recipe.update({ likes: --recipe.likes > 0 ? --recipe.likes : 0 });
         res.status(200).send("Recipe has been unliked!");
       });
     } else {
-      await RecipeLike.create({ userId, recipeId }).then(() => {
+      await RecipeLike.create({ userId, recipeId }).then(async () => {
+        recipe.update({ likes: ++recipe.likes });
         res.status(200).send("Recipe has been liked!");
       });
     }

@@ -18,6 +18,8 @@ module.exports = function (app) {
   app.post("/api/recipes/favorite", recipeCntrlr.getFavoriteRecipe);
   app.post("/api/recipes/favorite/all", recipeCntrlr.getAllFavoriteRecipes);
 
+  app.post("/api/recipes/like/add", recipeCntrlr.addToLikes);
+
   app.get("/api/recipes/:id", recipeCntrlr.getById);
   app.get("/api/recipes/user/:userId", checkToken, recipeCntrlr.getAllByUser);
 

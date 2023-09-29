@@ -30,6 +30,9 @@ module.exports = (sequelize, Sequelize) => {
       portion: {
         type: DataTypes.INTEGER,
       },
+      likes: {
+        type: DataTypes.INTEGER,
+      },
       img_url: {
         type: DataTypes.STRING,
       },
