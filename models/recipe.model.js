@@ -24,6 +24,12 @@ module.exports = (sequelize, Sequelize) => {
       description: {
         type: DataTypes.TEXT("long"),
       },
+      cooking_time: {
+        type: DataTypes.INTEGER,
+      },
+      portion: {
+        type: DataTypes.INTEGER,
+      },
       img_url: {
         type: DataTypes.STRING,
       },
@@ -31,7 +37,7 @@ module.exports = (sequelize, Sequelize) => {
         type: DataTypes.STRING,
         defaultValue: "new",
       },
-    },
+    }
     // {
     //   timestamps: false,
     // }

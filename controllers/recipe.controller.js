@@ -16,6 +16,7 @@ const RecipeStep = db.recipe_steps;
 const RecipeIngridient = db.recipe_ingridients;
 const Ingridient = db.ingridients;
 const FavoriteRecipe = db.favorite_recipes;
+const RecipeLike = db.recipe_likes;
 const Collection = db.collections;
 
 exports.create = async (req, res) => {
@@ -32,6 +33,8 @@ exports.create = async (req, res) => {
       recipe_ingridients,
       recipe_steps,
       category_id,
+      cooking_time,
+      portion,
       img_url,
     } = req.body;
     // console.log(req.files.length, "FILEEEEEEEEEEEEEEEEEEEES");
@@ -43,6 +46,8 @@ exports.create = async (req, res) => {
       short_dsc,
       recipe_steps,
       category_id,
+      cooking_time,
+      portion,
       img_url,
     };
     if (
@@ -394,4 +399,24 @@ exports.getAllFavoriteRecipes = async (req, res) => {
     .catch((err) => {
       res.status(500).json({ message: `${err}` });
     });
+};
+
+exports.addToLikes = async (req, res) => {
+  try {
+    const { userId, recipeId } = req.body;
+    const fav = await RecipeLike.findOne({
+      where: { userId, recipeId },
+    });
+    if (fav) {
+      await fav.destroy().then(() => {
+        res.status(200).send("Recipe has been unliked!");
+      });
+    } else {
+      await RecipeLike.create({ userId, recipeId }).then(() => {
+        res.status(200).send("Recipe has been liked!");
+      });
+    }
+  } catch (err) {
+    res.status(500).json({ message: `${err}` });
+  }
 };

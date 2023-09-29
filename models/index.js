@@ -8,6 +8,7 @@ db.ingridients = require("./ingridients.model.js")(sequelize, Sequelize);
 db.collections = require("./collections.model.js")(sequelize, Sequelize);
 db.recipe_steps = require("./recipe_step.model")(sequelize, Sequelize);
 db.favorite_recipes = require("./favorite_recipe.model")(sequelize, Sequelize);
+db.recipe_likes = require("./recipe_likes.model")(sequelize, Sequelize);
 db.recipe_ingridients = require("./recipe_ingridient.model")(
   sequelize,
   Sequelize
