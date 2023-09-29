@@ -32,6 +32,7 @@ module.exports = (sequelize, Sequelize) => {
       },
       likes: {
         type: DataTypes.INTEGER,
+        defaultValue: 0,
       },
       img_url: {
         type: DataTypes.STRING,

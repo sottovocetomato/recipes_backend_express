@@ -73,6 +73,8 @@ exports.create = async (req, res) => {
       title,
       short_dsc,
       category_id,
+      cooking_time,
+      portion,
       img_url: recData.img_url,
     }).catch((e) => Promise.reject(e));
 
@@ -305,6 +307,8 @@ exports.update = async (req, res) => {
         title: recData.title,
         short_dsc: recData.short_dsc,
         category_id: recData.category_id,
+        cooking_time: recData.cooking_time,
+        portion: recData.portion,
         img_url: recData.img_url,
       })
       .catch((e) => Promise.reject(e));
