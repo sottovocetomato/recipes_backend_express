@@ -17,7 +17,8 @@ const RecipeIngridient = db.recipe_ingridients;
 const Ingridient = db.ingridients;
 const FavoriteRecipe = db.favorite_recipes;
 const RecipeLike = db.recipe_likes;
-const Collection = db.collections;
+const RecipeComment = db.recipe_comments;
+
 
 exports.create = async (req, res) => {
   try {
@@ -169,6 +170,12 @@ exports.getById = async (req, res) => {
           //   attributes: ["title"],
           //   where: { collection: "units" },
           // },
+        ],
+      },
+      {
+        model: RecipeComment,
+        include: [
+          { model: User },
         ],
       },
     ],
@@ -427,3 +434,4 @@ exports.addToLikes = async (req, res) => {
     res.status(500).json({ message: `${err}` });
   }
 };
+
