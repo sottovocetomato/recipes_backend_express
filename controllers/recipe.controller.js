@@ -175,7 +175,7 @@ exports.getById = async (req, res) => {
       {
         model: RecipeComment,
         include: [
-          { model: User },
+          { model: User, attributes: ["username"] },
         ],
       },
     ],

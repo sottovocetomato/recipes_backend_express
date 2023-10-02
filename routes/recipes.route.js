@@ -1,4 +1,5 @@
 const recipeCntrlr = require("../controllers/recipe.controller");
+const recipeComment = require("../controllers/recipe_comment.controller");
 const { checkToken } = require("../middleware/checkToken");
 const { verifySignUp } = require("../middleware/verifySignUp");
 const { multerUpload } = require("../middleware/multer");
@@ -42,4 +43,6 @@ module.exports = function (app) {
     [checkToken, multerUpload("recipes").single("file")],
     recipeCntrlr.uploadImage
   );
+
+  app.post("/api/recipes/:id/comment/add", checkToken, recipeComment.addRecipeComment);
 };
