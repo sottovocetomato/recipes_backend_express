@@ -3,6 +3,8 @@ const bcrypt = require("bcrypt");
 const saltRounds = 10;
 const jwt = require("jsonwebtoken");
 const { generateToken } = require("../helpers/jwt");
+const {appUrl} = require("../helpers/appUrl");
+const {setObjProperty} = require("../helpers/main");
 const User = db.users;
 
 exports.register = async (req, res) => {
@@ -81,16 +83,26 @@ exports.me = async (req, res) => {
   }
 };
 
-exports.updateUser = async (req, res) => {
+exports.updateMe = async (req, res) => {
   try {
-    const { id } = req.body.id;
-    const user = await User.scope("withoutPass").findByPk(id, {});
+    let token = req?.headers?.authorization;
+    if (!token) throw new Error("token is not provided");
+    token = token.split(" ")[1];
+    const user = await User.scope("withoutPass").findOne({
+      where: { token },
+    })
     if (!user) {
-      throw new Error(`user with given id: ${req.body.id} cannot be found!`);
+      throw new Error(`User cannot be found!`);
     }
-    user.update(req?.body?.data);
+    let recData = req.body;
+
+    if (req.file) {
+      const imgPath = appUrl + req.file.path;
+      recData.user_img = imgPath
+    }
+    await user.update(recData).catch(e => res.status(500).json({ message: `${e}`}));
     res.status(200).json({ data: user });
-  } catch (error) {
-    res.status(500).json({ error: error });
+  } catch (e) {
+    res.status(500).json({ message: `${e}` });
   }
 };
