@@ -33,8 +33,11 @@ db.recipes.hasMany(db.recipe_steps);
 db.recipe_ingridients.belongsTo(db.recipes);
 db.recipes.hasMany(db.recipe_ingridients);
 
-// db.favorite_recipes.belongsTo(db.users);
-// db.users.hasMany(db.favorite_recipes);
+db.favorite_recipes.belongsTo(db.users);
+db.users.hasMany(db.favorite_recipes);
+
+db.favorite_recipes.belongsTo(db.recipes);
+db.recipes.hasMany(db.favorite_recipes);
 
 // db.recipe_ingridients.belongsTo(db.collections, {
 //   foreignKey: "unit_cid",

@@ -19,7 +19,6 @@ const FavoriteRecipe = db.favorite_recipes;
 const RecipeLike = db.recipe_likes;
 const RecipeComment = db.recipe_comments;
 
-
 exports.create = async (req, res) => {
   try {
     let token = req?.headers?.authorization;
@@ -174,9 +173,7 @@ exports.getById = async (req, res) => {
       },
       {
         model: RecipeComment,
-        include: [
-          { model: User, attributes: ["username", "user_img"] },
-        ],
+        include: [{ model: User, attributes: ["username", "user_img"] }],
       },
     ],
   })
@@ -193,16 +190,18 @@ exports.getAllFilter = async (req, res) => {
   const { filters = {} } = req.body;
 
   await Recipe.findAll({
-    // where: parseFilter(filters),
+    where: parseFilter(filters),
+    // where: {
+    //   "$Ingridient.title": "Admin",
+    // },
     include: [
       {
         model: Ingridient,
-        where: {
-          id: 1,
-        },
+        // where: parseFilter(filters),
         through: {
           attributes: [],
         },
+        required: false,
       },
     ],
     limit: parseInt(limit),
@@ -403,7 +402,11 @@ exports.getFavoriteRecipe = async (req, res) => {
 
 exports.getAllFavoriteRecipes = async (req, res) => {
   const { userId } = req.body;
-  await FavoriteRecipe.findAll({ where: { userId } })
+  await FavoriteRecipe.findAll({
+    where: { userId },
+    include: [Recipe],
+    attributes: [],
+  })
     .then((recipe) => {
       res.status(200).send({ data: recipe });
     })
@@ -434,4 +437,3 @@ exports.addToLikes = async (req, res) => {
     res.status(500).json({ message: `${err}` });
   }
 };
-

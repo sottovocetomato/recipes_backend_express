@@ -8,7 +8,7 @@ exports.parseFilter = (filter) => {
 
     const rule = filter[key].slice(0, index);
     let val = filter[key].slice(index + 1, filter[key].indexOf(")"));
-
+    // if (!val) break;
     if (rule === "LIKE") val = `%${val}%`;
     if (rule === "EQ") val = `${val}`;
 
