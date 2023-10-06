@@ -44,5 +44,9 @@ module.exports = function (app) {
     recipeCntrlr.uploadImage
   );
 
-  app.post("/api/recipes/:id/comment/add", checkToken, recipeComment.addRecipeComment);
+  app.post(
+    "/api/recipes/:id/comment/add",
+    checkToken,
+    recipeComment.addRecipeComment
+  );
 };

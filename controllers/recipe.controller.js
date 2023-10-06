@@ -191,9 +191,6 @@ exports.getAllFilter = async (req, res) => {
 
   await Recipe.findAll({
     where: parseFilter(filters),
-    // where: {
-    //   "$Ingridient.title": "Admin",
-    // },
     include: [
       {
         model: Ingridient,
@@ -201,7 +198,7 @@ exports.getAllFilter = async (req, res) => {
         through: {
           attributes: [],
         },
-        required: false,
+        // required: false,
       },
     ],
     limit: parseInt(limit),
@@ -214,6 +211,27 @@ exports.getAllFilter = async (req, res) => {
       console.log(err, "error");
       res.status(500).json({ error: `${err}` });
     });
+};
+
+exports.getAllFilterSQL = async (req, res) => {
+  const { limit = 20, page = 1 } = req.query;
+  const { filters = {} } = req.body;
+  const val = "огур";
+  const recipe = await db.sequelize
+    .query(
+      `SELECT * FROM recipes.recipes INNER JOIN recipes.recipesingridients
+        ON recipesingridients.recipeId = recipes.id
+        INNER JOIN recipes.ingridients
+        ON recipesingridients.ingridientId = ingridients.id
+        where recipes.title LIKE '%${val}%' OR ingridients.title LIKE '%${val}%'`
+    )
+    .catch((err) => {
+      console.log(err, "error");
+      res.status(500).json({ error: `${err}` });
+    });
+  if (recipe) {
+    res.status(200).send({ data: recipe });
+  }
 };
 
 exports.update = async (req, res) => {
