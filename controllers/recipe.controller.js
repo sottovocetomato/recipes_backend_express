@@ -5,7 +5,7 @@ const {
   setObjProperty,
   mergeObjects,
   setOrder,
-  getOffset,
+  getOffset, getPaginationMeta,
 } = require("../helpers/main");
 const { Op, QueryTypes } = require("sequelize");
 const { parseFilter } = require("../helpers/filter");
@@ -232,7 +232,8 @@ exports.getAllByTitleSQL = async (req, res) => {
       res.status(500).json({ error: `${err}` });
     });
   if (recipe) {
-    res.status(200).send({ data: recipe });
+    const _meta = getPaginationMeta({ limit, page, count });
+    res.status(200).send({ data: recipe,  _meta });
   }
 };
 
