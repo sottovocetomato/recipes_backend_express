@@ -7,7 +7,7 @@ const {
   setOrder,
   getOffset,
 } = require("../helpers/main");
-const { Op } = require("sequelize");
+const { Op, QueryTypes } = require("sequelize");
 const { parseFilter } = require("../helpers/filter");
 const Recipe = db.recipes;
 const User = db.users;
@@ -213,17 +213,19 @@ exports.getAllFilter = async (req, res) => {
     });
 };
 
-exports.getAllFilterSQL = async (req, res) => {
+exports.getAllByTitleSQL = async (req, res) => {
   const { limit = 20, page = 1 } = req.query;
   const { filters = {} } = req.body;
-  const val = "огур";
+  const val = parseFilter(filters, true)['title'];
+  console.log(val, "VAL")
   const recipe = await db.sequelize
     .query(
-      `SELECT * FROM recipes.recipes INNER JOIN recipes.recipesingridients
+      `SELECT \`recipes\`.* FROM recipes.recipes INNER JOIN recipes.recipesingridients
         ON recipesingridients.recipeId = recipes.id
         INNER JOIN recipes.ingridients
         ON recipesingridients.ingridientId = ingridients.id
-        where recipes.title LIKE '%${val}%' OR ingridients.title LIKE '%${val}%'`
+        where recipes.title LIKE '${val}' OR ingridients.title LIKE '${val}'`,
+        { type: QueryTypes.SELECT }
     )
     .catch((err) => {
       console.log(err, "error");

@@ -14,6 +14,7 @@ module.exports = function (app) {
     recipeCntrlr.create
   );
   app.post("/api/recipes/filter", recipeCntrlr.getAllFilter);
+  app.post("/api/recipes/bytitle", recipeCntrlr.getAllByTitleSQL);
 
   app.post("/api/recipes/favorite/add", recipeCntrlr.addFavoriteRecipe);
   app.post("/api/recipes/favorite", recipeCntrlr.getFavoriteRecipe);

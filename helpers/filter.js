@@ -1,6 +1,6 @@
 const { Op } = require("sequelize");
 
-exports.parseFilter = (filter) => {
+exports.parseFilter = (filter, noRule = false) => {
   const where = {};
   for (const key in filter) {
     const index = filter[key].indexOf("(");
@@ -12,7 +12,12 @@ exports.parseFilter = (filter) => {
     if (rule === "LIKE") val = `%${val}%`;
     if (rule === "EQ") val = `${val}`;
 
-    where[key] = { [Op[rule.toLowerCase()]]: val };
+    if(noRule) {
+      where[key] = val
+    } else {
+      where[key] = { [Op[rule.toLowerCase()]]: val };
+    }
+
   }
   return where;
 };
