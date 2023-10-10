@@ -221,21 +221,34 @@ exports.getAllByTitleSQL = async (req, res) => {
   const { filters = {} } = req.body;
   const val = parseFilter(filters, true)["title"];
   console.log(val, "VAL");
-  const [results, metadata] = await db.sequelize
+  const results = await db.sequelize
     .query(
       `SELECT \`recipes\`.* FROM recipes.recipes INNER JOIN recipes.recipesingridients
         ON recipesingridients.recipeId = recipes.id
         INNER JOIN recipes.ingridients
         ON recipesingridients.ingridientId = ingridients.id
-        where recipes.title LIKE '${val}' OR ingridients.title LIKE '${val}'`
+        WHERE recipes.title LIKE '${val}' OR ingridients.title LIKE '${val}'
+        LIMIT ${limit} OFFSET ${getOffset(limit, page)}`, { type: QueryTypes.SELECT }
     )
     .catch((err) => {
       console.log(err, "error");
       res.status(500).json({ error: `${err}` });
     });
-  console.log(results, "RESULTS");
+  const meta = await db.sequelize
+      .query(
+          `SELECT COUNT(*) FROM recipes.recipes INNER JOIN recipes.recipesingridients
+        ON recipesingridients.recipeId = recipes.id
+        INNER JOIN recipes.ingridients
+        ON recipesingridients.ingridientId = ingridients.id
+        where recipes.title LIKE '${val}' OR ingridients.title LIKE '${val}'`, { type: QueryTypes.SELECT }
+      )
+      .catch((err) => {
+        console.log(err, "error");
+        res.status(500).json({ error: `${err}` });
+      });
+  console.log(meta, "meta");
   if (results) {
-    const _meta = getPaginationMeta({ limit, page, metadata });
+    const _meta = getPaginationMeta({ limit, page, count: meta[0]['COUNT(*)'] });
     res.status(200).send({ data: results, _meta });
   }
 };
