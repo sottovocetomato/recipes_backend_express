@@ -191,7 +191,7 @@ exports.getAllFilter = async (req, res) => {
   const { limit = 20, page = 1 } = req.query;
   const { filters = {} } = req.body;
 
-  await Recipe.findAll({
+  await Recipe.findAndCountAll({
     where: parseFilter(filters),
     include: [
       {
