@@ -138,16 +138,19 @@ exports.getAll = async (req, res) => {
 
 exports.getAllByUser = async (req, res) => {
   const { limit = 20, page = 1 } = req.query;
-  await Recipe.findAll({
-    limit,
+  await Recipe.findAndCountAll({
+    limit: parseInt(limit),
     offset: getOffset(limit, page),
     where: {
       userId: req.params.userId,
     },
     include: [Category, RecipeIngridient, RecipeStep],
+    distinct: true,
   })
-    .then((data) => {
-      res.status(200).send({ data });
+    .then(({ count, rows: data }) => {
+      console.log(count, "count");
+      const _meta = getPaginationMeta({ limit, page, count });
+      res.status(200).send({ data, _meta });
     })
     .catch((err) => {
       res.status(500).json({ message: `${err}` });
@@ -228,27 +231,33 @@ exports.getAllByTitleSQL = async (req, res) => {
         INNER JOIN recipes.ingridients
         ON recipesingridients.ingridientId = ingridients.id
         WHERE recipes.title LIKE '${val}' OR ingridients.title LIKE '${val}'
-        LIMIT ${limit} OFFSET ${getOffset(limit, page)}`, { type: QueryTypes.SELECT }
+        LIMIT ${limit} OFFSET ${getOffset(limit, page)}`,
+      { type: QueryTypes.SELECT }
     )
     .catch((err) => {
       console.log(err, "error");
       res.status(500).json({ error: `${err}` });
     });
   const meta = await db.sequelize
-      .query(
-          `SELECT COUNT(*) FROM recipes.recipes INNER JOIN recipes.recipesingridients
+    .query(
+      `SELECT COUNT(*) FROM recipes.recipes INNER JOIN recipes.recipesingridients
         ON recipesingridients.recipeId = recipes.id
         INNER JOIN recipes.ingridients
         ON recipesingridients.ingridientId = ingridients.id
-        where recipes.title LIKE '${val}' OR ingridients.title LIKE '${val}'`, { type: QueryTypes.SELECT }
-      )
-      .catch((err) => {
-        console.log(err, "error");
-        res.status(500).json({ error: `${err}` });
-      });
+        where recipes.title LIKE '${val}' OR ingridients.title LIKE '${val}'`,
+      { type: QueryTypes.SELECT }
+    )
+    .catch((err) => {
+      console.log(err, "error");
+      res.status(500).json({ error: `${err}` });
+    });
   console.log(meta, "meta");
   if (results) {
-    const _meta = getPaginationMeta({ limit, page, count: meta[0]['COUNT(*)'] });
+    const _meta = getPaginationMeta({
+      limit,
+      page,
+      count: meta[0]["COUNT(*)"],
+    });
     res.status(200).send({ data: results, _meta });
   }
 };
