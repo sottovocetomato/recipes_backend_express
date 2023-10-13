@@ -126,6 +126,7 @@ exports.getAll = async (req, res) => {
     offset: getOffset(limit, page),
     order: order ? order : null,
     include: [Category, RecipeIngridient, RecipeStep],
+    distinct: true,
   })
     .then(({ count, rows: data }) => {
       const _meta = getPaginationMeta({ limit, page, count });
@@ -148,7 +149,6 @@ exports.getAllByUser = async (req, res) => {
     distinct: true,
   })
     .then(({ count, rows: data }) => {
-      console.log(count, "count");
       const _meta = getPaginationMeta({ limit, page, count });
       res.status(200).send({ data, _meta });
     })
@@ -223,7 +223,6 @@ exports.getAllByTitleSQL = async (req, res) => {
   const { limit = 20, page = 1 } = req.query;
   const { filters = {} } = req.body;
   const val = parseFilter(filters, true)["title"];
-  console.log(val, "VAL");
   const results = await db.sequelize
     .query(
       `SELECT \`recipes\`.* FROM recipes.recipes INNER JOIN recipes.recipesingridients
@@ -448,13 +447,15 @@ exports.getFavoriteRecipe = async (req, res) => {
 
 exports.getAllFavoriteRecipes = async (req, res) => {
   const { userId } = req.body;
-  await FavoriteRecipe.findAll({
+  await FavoriteRecipe.findAndCountAll({
     where: { userId },
     include: [Recipe],
     attributes: [],
+    distinct: true,
   })
-    .then((recipe) => {
-      res.status(200).send({ data: recipe });
+    .then(({ count, rows: data }) => {
+      const _meta = getPaginationMeta({ limit, page, count });
+      res.status(200).send({ data, _meta });
     })
     .catch((err) => {
       res.status(500).json({ message: `${err}` });

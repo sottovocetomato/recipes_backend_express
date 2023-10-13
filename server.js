@@ -205,6 +205,36 @@ async function initCollection() {
           newUser.update({ token });
         }
       });
+      bcrypt.hash("user1123", 10, async (err, hash) => {
+        if (err) throw new Error(err);
+        else {
+          const newUser = await User.create({
+            username: "user1",
+            email: "user@test.com",
+            password: hash,
+          });
+          const token = generateToken({
+            email: "user@test.com",
+            id: newUser?.id,
+          });
+          newUser.update({ token });
+        }
+      });
+      bcrypt.hash("user2123", 10, async (err, hash) => {
+        if (err) throw new Error(err);
+        else {
+          const newUser = await User.create({
+            username: "user2",
+            email: "user2@test.com",
+            password: hash,
+          });
+          const token = generateToken({
+            email: "admin@test.com",
+            id: newUser?.id,
+          });
+          newUser.update({ token });
+        }
+      });
     }
 
     const category = await Categories.findAll();
