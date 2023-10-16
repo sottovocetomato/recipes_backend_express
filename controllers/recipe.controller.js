@@ -446,6 +446,7 @@ exports.getFavoriteRecipe = async (req, res) => {
 };
 
 exports.getAllFavoriteRecipes = async (req, res) => {
+  const { limit = 20, page = 1 } = req.query;
   const { userId } = req.body;
   await FavoriteRecipe.findAndCountAll({
     where: { userId },
