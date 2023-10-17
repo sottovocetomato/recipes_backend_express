@@ -25,6 +25,8 @@ module.exports = function (app) {
   app.get("/api/recipes/:id", recipeCntrlr.getById);
   app.get("/api/recipes/user/:userId", checkToken, recipeCntrlr.getAllByUser);
 
+  app.get("/api/recipes/category/:categoryId", recipeCntrlr.getAllByCategory);
+
   app.get("/api/recipes", recipeCntrlr.getAll);
   app.patch(
     "/api/recipes/:id",

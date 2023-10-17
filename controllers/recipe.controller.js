@@ -156,6 +156,26 @@ exports.getAllByUser = async (req, res) => {
       res.status(500).json({ message: `${err}` });
     });
 };
+exports.getAllByCategory = async (req, res) => {
+  const { limit = 20, page = 1 } = req.query;
+  const { categoryId } = req.params;
+  await Recipe.findAndCountAll({
+    limit: parseInt(limit),
+    offset: getOffset(limit, page),
+    where: {
+      categoryId,
+    },
+    include: [Category],
+    distinct: true,
+  })
+    .then(({ count, rows: data }) => {
+      const _meta = getPaginationMeta({ limit, page, count });
+      res.status(200).send({ data, _meta });
+    })
+    .catch((err) => {
+      res.status(500).json({ message: `${err}` });
+    });
+};
 
 exports.getById = async (req, res) => {
   const id = req.params.id;
