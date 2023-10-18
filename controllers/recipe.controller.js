@@ -162,10 +162,17 @@ exports.getAllByCategory = async (req, res) => {
   await Recipe.findAndCountAll({
     limit: parseInt(limit),
     offset: getOffset(limit, page),
-    where: {
-      categoryId,
-    },
-    include: [Category],
+    include: [
+      {
+        model: Category,
+        where: {
+          id: categoryId,
+        },
+        through: {
+          attributes: [],
+        },
+      },
+    ],
     distinct: true,
   })
     .then(({ count, rows: data }) => {
