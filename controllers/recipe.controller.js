@@ -171,6 +171,7 @@ exports.getAllByCategory = async (req, res) => {
         through: {
           attributes: [],
         },
+        required: true,
       },
     ],
     distinct: true,

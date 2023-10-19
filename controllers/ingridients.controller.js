@@ -24,7 +24,7 @@ exports.getAll = async (req, res) => {
   console.log(req.query, "REQ QUERY");
   let { limit = 20, page = 1 } = req.query;
   await Ingridient.findAndCountAll({
-    limit: limit,
+    limit: parseInt(limit),
     offset: getOffset(limit, page),
   })
     .then(({ count, rows: data }) => {
@@ -52,7 +52,7 @@ exports.getAllRecipes = async (req, res) => {
         },
       },
     ],
-    limit: limit,
+    limit: parseInt(limit),
     offset: getOffset(limit, page),
   })
     .then((data) => {
@@ -65,12 +65,13 @@ exports.getAllRecipes = async (req, res) => {
 };
 
 exports.getAllFilter = async (req, res) => {
-  const { limit = 20, offset = 0, filters = {} } = req.body;
+  let { limit = 20, page = 1 } = req.query;
+  const { filters = {} } = req.body;
 
   await Ingridient.findAll({
+    limit: parseInt(limit),
+    offset: getOffset(limit, page),
     where: parseFilter(filters),
-    limit,
-    offset,
   })
     .then((data) => {
       res.status(200).send({ data });
