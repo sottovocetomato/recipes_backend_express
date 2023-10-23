@@ -513,3 +513,27 @@ exports.addToLikes = async (req, res) => {
     res.status(500).json({ message: `${err}` });
   }
 };
+
+exports.approveRecipe = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const recipe = await Recipe.findByPk(id);
+    if (!recipe) throw new Error("Recipe with given id is not found");
+    await recipe.update({ status: "approved" });
+    res.status(200).send("Recipe has been approved!");
+  } catch (err) {
+    res.status(500).json({ message: `${err}` });
+  }
+};
+
+exports.declineRecipe = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const recipe = await Recipe.findByPk(id);
+    if (!recipe) throw new Error("Recipe with given id is not found");
+    await recipe.update({ status: "declined" });
+    res.status(200).send("Recipe has been declined!");
+  } catch (err) {
+    res.status(500).json({ message: `${err}` });
+  }
+};
