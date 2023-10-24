@@ -22,7 +22,7 @@ exports.create = async (req, res) => {
 
 exports.getAll = async (req, res) => {
   console.log(req.query, "REQ QUERY");
-  let { limit = 20, page = 1 } = req.query;
+  let { limit = db.limit, page = 1 } = req.query;
   await Ingridient.findAndCountAll({
     limit: parseInt(limit),
     offset: getOffset(limit, page),
@@ -38,7 +38,7 @@ exports.getAll = async (req, res) => {
 
 exports.getAllRecipes = async (req, res) => {
   console.log(req.query, "REQ QUERY");
-  let { limit = 20, page = 1 } = req.query;
+  let { limit = db.limit, page = 1 } = req.query;
   const id = req.params.id;
   await Recipe.findAll({
     include: [
@@ -65,7 +65,7 @@ exports.getAllRecipes = async (req, res) => {
 };
 
 exports.getAllFilter = async (req, res) => {
-  let { limit = 20, page = 1 } = req.query;
+  let { limit = db.limit, page = 1 } = req.query;
   const { filters = {} } = req.body;
 
   await Ingridient.findAll({

@@ -115,7 +115,7 @@ exports.create = async (req, res) => {
 };
 
 exports.getAll = async (req, res) => {
-  let { limit = 20, page = 1, order } = req.query;
+  let { limit = db.limit, page = 1, order } = req.query;
 
   if (order) {
     order = setOrder(order);
@@ -138,7 +138,7 @@ exports.getAll = async (req, res) => {
 };
 
 exports.getAllByUser = async (req, res) => {
-  const { limit = 20, page = 1 } = req.query;
+  const { limit = db.limit, page = 1 } = req.query;
   await Recipe.findAndCountAll({
     limit: parseInt(limit),
     offset: getOffset(limit, page),
@@ -157,7 +157,7 @@ exports.getAllByUser = async (req, res) => {
     });
 };
 exports.getAllByCategory = async (req, res) => {
-  const { limit = 20, page = 1 } = req.query;
+  const { limit = db.limit, page = 1 } = req.query;
   const { categoryId } = req.params;
   await Recipe.findAndCountAll({
     limit: parseInt(limit),
@@ -219,7 +219,7 @@ exports.getById = async (req, res) => {
 };
 
 exports.getAllFilter = async (req, res) => {
-  const { limit = 20, page = 1 } = req.query;
+  const { limit = db.limit, page = 1 } = req.query;
   const { filters = {} } = req.body;
 
   await Recipe.findAndCountAll({
@@ -248,7 +248,7 @@ exports.getAllFilter = async (req, res) => {
 };
 
 exports.getAllByTitleSQL = async (req, res) => {
-  const { limit = 20, page = 1 } = req.query;
+  const { limit = db.limit, page = 1 } = req.query;
   const { filters = {} } = req.body;
   const val = parseFilter(filters, true)["title"];
   const results = await db.sequelize
@@ -474,7 +474,7 @@ exports.getFavoriteRecipe = async (req, res) => {
 };
 
 exports.getAllFavoriteRecipes = async (req, res) => {
-  const { limit = 20, page = 1 } = req.query;
+  const { limit = db.limit, page = 1 } = req.query;
   const { userId } = req.body;
   await FavoriteRecipe.findAndCountAll({
     where: { userId },

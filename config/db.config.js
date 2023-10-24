@@ -64,5 +64,6 @@ const sequelize = new Sequelize(
 
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
+db.limit = 30;
 
 module.exports = db;
