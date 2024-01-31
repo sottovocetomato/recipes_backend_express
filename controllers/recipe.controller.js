@@ -125,7 +125,15 @@ exports.getAll = async (req, res) => {
     limit: parseInt(limit),
     offset: getOffset(limit, page),
     order: order ? order : null,
-    include: [Category, RecipeIngridient, RecipeStep],
+    include: [
+      Category,
+      RecipeIngridient,
+      RecipeStep,
+      {
+        model: User,
+        attributes: ["user_img", "username"],
+      },
+    ],
     distinct: true,
   })
     .then(({ count, rows: data }) => {
