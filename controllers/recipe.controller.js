@@ -116,7 +116,6 @@ exports.create = async (req, res) => {
 
 exports.getAll = async (req, res) => {
   let { limit = db.limit, page = 1, order } = req.query;
-
   if (order) {
     order = setOrder(order);
   }
@@ -136,7 +135,8 @@ exports.getAll = async (req, res) => {
     ],
     distinct: true,
   })
-    .then(({ count, rows: data }) => {
+    .then(async ({ count, rows }) => {
+      const data = await addFavorites(rows, req.headers.authorization);
       const _meta = getPaginationMeta({ limit, page, count });
       res.status(200).send({ data, _meta });
     })
@@ -545,3 +545,26 @@ exports.declineRecipe = async (req, res) => {
     res.status(500).json({ message: `${err}` });
   }
 };
+
+async function addFavorites(data, token) {
+  let favs = [];
+  // console.log(data, "DATA");
+  if (token) {
+    token = token.split(" ")[1];
+    const user = await User.scope("withoutPass").findOne({
+      where: { token },
+    });
+    favs = await FavoriteRecipe.findAll({
+      where: { userId: user.id },
+    });
+  }
+
+  data = data.map((el) => {
+    console.log(el);
+    const recipe = el.dataValues;
+    const isInFavs = favs.find((f) => f.recipeId === recipe.id);
+    recipe.favorite = !!isInFavs;
+    return el;
+  });
+  return data;
+}
