@@ -259,12 +259,14 @@ exports.getAllByTitleSQL = async (req, res) => {
   const { limit = db.limit, page = 1 } = req.query;
   const { filters = {} } = req.body;
   const val = parseFilter(filters, true)["title"];
-  const results = await db.sequelize
+  let results = await db.sequelize
     .query(
-      `SELECT \`recipes\`.* FROM recipes.recipes INNER JOIN recipes.recipesingridients
+      `SELECT \`recipes\`.*, user_img, username FROM recipes.recipes INNER JOIN recipes.recipesingridients
         ON recipesingridients.recipeId = recipes.id
         INNER JOIN recipes.ingridients
         ON recipesingridients.ingridientId = ingridients.id
+        INNER JOIN recipes.users
+        ON recipes.userId = users.id
         WHERE recipes.title LIKE '${val}' OR ingridients.title LIKE '${val}'
         LIMIT ${limit} OFFSET ${getOffset(limit, page)}`,
       { type: QueryTypes.SELECT }
@@ -293,6 +295,22 @@ exports.getAllByTitleSQL = async (req, res) => {
       page,
       count: meta[0]["COUNT(*)"],
     });
+    results = results.map((el) => ({
+      id: el?.id,
+      title: el?.title,
+      category_id: el?.category_id,
+      short_dsc: el?.short_dsc,
+      description: el?.description,
+      cooking_time: el?.cooking_time,
+      portion: el?.portion,
+      likes: el?.likes,
+      img_url: el?.img_url,
+      status: el?.status,
+      createdAt: el?.createdAt,
+      updatedAt: el?.updatedAt,
+      userId: el?.userId,
+      user: { user_img: el?.user_img, username: el?.username },
+    }));
     res.status(200).send({ data: results, _meta });
   }
 };
