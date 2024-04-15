@@ -529,12 +529,12 @@ exports.addToLikes = async (req, res) => {
         recipe.update({
           likes: --recipe.likes > 0 ? --recipe.likes : 0,
         });
-        res.status(200).send({ data: recipe });
+        res.status(200).send({ data: { likes: recipe.likes, id: recipe.id } });
       });
     } else {
       await RecipeLike.create({ userId, recipeId }).then(async () => {
         recipe.update({ likes: ++recipe.likes });
-        res.status(200).send({ data: recipe });
+        res.status(200).send({ data: { likes: recipe.likes, id: recipe.id } });
       });
     }
   } catch (err) {
