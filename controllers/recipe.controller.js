@@ -526,13 +526,15 @@ exports.addToLikes = async (req, res) => {
     const recipe = await Recipe.findByPk(recipeId);
     if (fav) {
       await fav.destroy().then(() => {
-        recipe.update({ likes: --recipe.likes > 0 ? --recipe.likes : 0 });
-        res.status(200).send("Recipe has been unliked!");
+        recipe.update({
+          likes: --recipe.likes > 0 ? --recipe.likes : 0,
+        });
+        res.status(200).send({ data: recipe });
       });
     } else {
       await RecipeLike.create({ userId, recipeId }).then(async () => {
         recipe.update({ likes: ++recipe.likes });
-        res.status(200).send("Recipe has been liked!");
+        res.status(200).send({ data: recipe });
       });
     }
   } catch (err) {
