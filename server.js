@@ -65,7 +65,7 @@ app.use("/static", express.static(path.join(__dirname, "/static/")));
 app.get("/", (req, res) => {
   res.json({ message: "ok" });
 });
-app.get("/recipes-server", (req, res) => {
+app.get("/recipes-server/api/me", (req, res) => {
   res.json({ message: "ok" });
 });
 
