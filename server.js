@@ -63,6 +63,9 @@ app.use("/static", express.static(path.join(__dirname, "/static/")));
 app.get("/", (req, res) => {
   res.json({ message: "ok" });
 });
+app.get("/recipes-server", (req, res) => {
+  res.json({ message: "ok" });
+});
 
 /* Error handler middleware */
 app.use((err, req, res, next) => {
