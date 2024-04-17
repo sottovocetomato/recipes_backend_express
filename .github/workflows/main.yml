@@ -28,7 +28,7 @@ jobs:
           username: ${{ secrets.DEPLOY_SERVER_USERNAME }}
           key: ${{ secrets.DEPLOY_SERVER_KEY }}
           script: |
-            cd var/www/allprojects/recipes_backend_express
+            cd var/www/allprojects/recipes_backend
             pm2 stop server.js
             git pull origin master
             git status
