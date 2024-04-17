@@ -16,7 +16,7 @@ const Ingridients = db.ingridients;
 const User = db.users;
 const Categories = db.categories;
 //
-app.set("base", "/qae");
+// app.set("base", "/recipes-server");
 app.use(express.json());
 
 app.use(express.static(__dirname + "/public"));
@@ -65,9 +65,9 @@ app.use("/static", express.static(path.join(__dirname, "/static/")));
 app.get("/", (req, res) => {
   res.json({ message: "ok" });
 });
-app.get("/recipes-server/api/me", (req, res) => {
-  res.json({ message: "ok" });
-});
+// app.get("/recipes-server", (req, res) => {
+//   res.json({ message: "ok" });
+// });
 
 /* Error handler middleware */
 app.use((err, req, res, next) => {
