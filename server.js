@@ -16,16 +16,17 @@ const Ingridients = db.ingridients;
 const User = db.users;
 const Categories = db.categories;
 //
-
+app.set("base", "/qae");
 app.use(express.json());
 
 app.use(express.static(__dirname + "/public"));
 
-const corsOptions = {
-  origin: "http://localhost:5173",
-  optionsSuccessStatus: 200,
-};
-app.use(cors(corsOptions));
+// const corsOptions = {
+//   origin: "http://localhost:5173",
+//   optionsSuccessStatus: 200,
+// };
+// app.use(cors(corsOptions));
+app.use(cors());
 
 app.use(function (req, res, next) {
   // Website you wish to allow to connect
