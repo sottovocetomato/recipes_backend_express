@@ -104,7 +104,7 @@ const sync = async () => {
   db.sequelize
     .sync()
     .then(async () => {
-      await initCollection();
+      // await initCollection();
       console.log("Synced db.");
     })
     .catch((err) => {
