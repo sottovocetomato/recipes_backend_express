@@ -9,9 +9,9 @@ const { appUrl } = require("../helpers/appUrl");
 
 exports.create = async (req, res) => {
   try {
-    const { name, description } = req.body;
+    const { title, description } = req.body;
     const data = await Ingridient.create({
-      name,
+      title,
       description,
     });
     res.status(200).json({ data });
