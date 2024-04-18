@@ -7,7 +7,7 @@ const { checkExistingItem } = require("../middleware/checkExistingItem");
 module.exports = function (app) {
   app.post(
     "/api/ingridients",
-    checkExistingItem("ingridients", "name"),
+    checkExistingItem("ingridients", "title"),
     ingrCntrlr.create
   );
   app.post("/api/ingridients/filter", ingrCntrlr.getAllFilter);
