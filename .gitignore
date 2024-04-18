@@ -11,6 +11,8 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+./hashpass.js
+
 node_modules
 .DS_Store
 dist
