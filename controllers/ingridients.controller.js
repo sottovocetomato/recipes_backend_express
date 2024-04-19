@@ -3,17 +3,34 @@ const Ingridient = db.ingridients;
 const Recipe = db.recipes;
 const { Op } = require("sequelize");
 const { parseFilter } = require("../helpers/filter");
-const { getPaginationMeta, getOffset } = require("../helpers/main");
+const {
+  getPaginationMeta,
+  getOffset,
+  setObjProperty,
+} = require("../helpers/main");
 const { multerUpload } = require("../middleware/multer");
 const { appUrl } = require("../helpers/appUrl");
 
 exports.create = async (req, res) => {
   try {
-    const { title, description } = req.body;
+    const { title, description, img_url } = req.body;
+    let recData = {
+      title,
+      description,
+      img_url,
+    };
+    if (req.files.length) {
+      req.files.forEach((file) => {
+        const imgPath = appUrl + file.path;
+        setObjProperty(recData, file.fieldname, imgPath);
+      });
+    }
     const data = await Ingridient.create({
       title,
       description,
+      img_url: recData.img_url,
     });
+
     res.status(200).json({ data });
   } catch (e) {
     res.status(500).json({ error: e });
@@ -96,11 +113,19 @@ exports.getById = async (req, res) => {
 exports.update = async (req, res) => {
   try {
     const id = req.params.id;
+    let recData = req.body;
+
+    if (req.files.length) {
+      req.files.forEach((file) => {
+        const imgPath = appUrl + file.path;
+        setObjProperty(recData, file.fieldname, imgPath);
+      });
+    }
     const data = await Ingridient.findByPk(id, {});
     console.log(data, "DATA");
     console.log(req?.body, "req?.body?.data");
     if (!data) throw new Error("Ingridient with given id is not found");
-    await data.update(req?.body).then((data) => res.status(200).json({ data }));
+    await data.update(recData).then((data) => res.status(200).json({ data }));
   } catch (e) {
     res.status(500).json({ error: e });
   }

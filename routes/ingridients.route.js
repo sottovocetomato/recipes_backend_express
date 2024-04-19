@@ -7,7 +7,10 @@ const { checkExistingItem } = require("../middleware/checkExistingItem");
 module.exports = function (app) {
   app.post(
     "/api/ingridients",
-    checkExistingItem("ingridients", "title"),
+    [
+      checkExistingItem("ingridients", "title"),
+      multerUpload("ingridients").any(),
+    ],
     ingrCntrlr.create
   );
   app.post("/api/ingridients/filter", ingrCntrlr.getAllFilter);
@@ -18,7 +21,11 @@ module.exports = function (app) {
 
   app.get("/api/ingridients/:id/recipes", ingrCntrlr.getAllRecipes);
 
-  app.patch("/api/ingridients/:id", ingrCntrlr.update);
+  app.patch(
+    "/api/ingridients/:id",
+    multerUpload("ingridients").any(),
+    ingrCntrlr.update
+  );
 
   app.post(
     "/api/ingridients/:id/images",
