@@ -1,4 +1,5 @@
 const { appUrl } = require("./appUrl");
+const db = require("../config/db.config");
 
 // function getOffset(currentPage = 1, listPerPage) {
 //   return (currentPage - 1) * [listPerPage];
@@ -74,6 +75,21 @@ function isJsonString(str) {
   }
   return true;
 }
+
+function checkItemExistsHelper(db, tableName, field, reqBody) {
+  const Table = db[tableName];
+  console.log(reqBody, "reqBody");
+  console.log(tableName, "tableName");
+  console.log(Table, "Table");
+  console.log(field, "field");
+  console.log(reqBody[field], "reqBody[field]");
+  return Table.findOne({
+    where: {
+      [field]: reqBody[field],
+    },
+  });
+}
+
 module.exports = {
   getOffset,
   emptyOrRows,
@@ -81,4 +97,5 @@ module.exports = {
   setObjProperty,
   mergeObjects,
   setOrder,
+  checkItemExistsHelper,
 };

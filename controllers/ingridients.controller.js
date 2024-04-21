@@ -14,6 +14,7 @@ const { appUrl } = require("../helpers/appUrl");
 exports.create = async (req, res) => {
   try {
     const { title, description, img_url } = req.body;
+    console.log(req.body, "req.body");
     let recData = {
       title,
       description,
@@ -84,7 +85,7 @@ exports.getAllRecipes = async (req, res) => {
 exports.getAllFilter = async (req, res) => {
   let { limit = db.limit, page = 1 } = req.query;
   const { filters = {} } = req.body;
-
+  console.log(filters, "filters");
   await Ingridient.findAll({
     limit: parseInt(limit),
     offset: getOffset(limit, page),

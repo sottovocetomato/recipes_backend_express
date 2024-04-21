@@ -3,14 +3,27 @@ const { checkToken } = require("../middleware/checkToken");
 const { verifySignUp } = require("../middleware/verifySignUp");
 const { multerUpload } = require("../middleware/multer");
 const { checkExistingItem } = require("../middleware/checkExistingItem");
+const multer = require("multer");
 
 module.exports = function (app) {
   app.post(
     "/api/ingridients",
-    [
-      checkExistingItem("ingridients", "title"),
-      multerUpload("ingridients").any(),
-    ],
+    function (req, res) {
+      multerUpload("ingridients", {
+        tableName: "ingridients",
+        field: "title",
+      }).any()(req, res, function (err) {
+        if (err instanceof multer.MulterError) {
+          return res.status(400).send({
+            message: `Запись с именем уже существует`,
+          });
+        } else {
+          return res.status(400).send({
+            message: `Запись с именем уже существует ххехехехе`,
+          });
+        }
+      });
+    },
     ingrCntrlr.create
   );
   app.post("/api/ingridients/filter", ingrCntrlr.getAllFilter);

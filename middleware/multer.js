@@ -1,5 +1,7 @@
 const multer = require("multer");
 const path = require("path");
+const { checkItemExistsHelper } = require("../helpers/main");
+const db = require("../config/db.config");
 
 const checkFileType = function (file, cb) {
   console.log("checking file type");
@@ -17,6 +19,25 @@ const checkFileType = function (file, cb) {
     cb("Error: You can Only Upload Images!!");
   }
 };
+const checkExistBeforeUpload = async (
+  req,
+  file,
+  cb,
+  { tableName, field } = {}
+) => {
+  const Table = db[tableName];
+  const entry = await Table.findOne({
+    where: {
+      [field]: req.body[field],
+    },
+  });
+  console.log(entry);
+  if (!entry) {
+    return cb(null, true);
+  } else {
+    cb(new Error(`Запись с именем ${req.body[field]} уже существует`));
+  }
+};
 
 const storageEngine = (filePath) =>
   multer.diskStorage({
@@ -26,11 +47,14 @@ const storageEngine = (filePath) =>
     },
   });
 
-exports.multerUpload = (filePath, req, file) =>
+exports.multerUpload = (filePath, checkExistenceData = {}) =>
   multer({
     storage: storageEngine(filePath),
     limits: { fileSize: 10000000 },
-    fileFilter: (req, file, cb) => {
+    fileFilter: async (req, file, cb) => {
       checkFileType(file, cb);
+      if (checkExistenceData?.tableName && checkExistenceData?.field) {
+        await checkExistBeforeUpload(req, file, cb, checkExistenceData);
+      }
     },
   });
