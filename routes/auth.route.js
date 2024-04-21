@@ -1,7 +1,7 @@
 const authRoute = require("../controllers/auth.controller.js");
 const { checkToken } = require("../middleware/checkToken");
 const { verifySignUp } = require("../middleware/verifySignUp");
-const {multerUpload} = require("../middleware/multer");
+const { multerUpload } = require("../middleware/multer");
 
 module.exports = function (app) {
   app.post(
@@ -13,5 +13,12 @@ module.exports = function (app) {
   app.post("/api/auth/login", authRoute.login);
   app.get("/api/me", checkToken, authRoute.me);
 
-  app.patch("/api/me/update",[checkToken, multerUpload("users").single("file")], authRoute.updateMe);
+  app.patch(
+    "/api/me/update",
+    [
+      checkToken,
+      multerUpload("users", { method: "single", methodArgs: "file" }),
+    ],
+    authRoute.updateMe
+  );
 };

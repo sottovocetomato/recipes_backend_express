@@ -8,22 +8,14 @@ const multer = require("multer");
 module.exports = function (app) {
   app.post(
     "/api/ingridients",
-    function (req, res) {
-      multerUpload("ingridients", {
+    multerUpload(
+      "ingridients",
+      { method: "any" },
+      {
         tableName: "ingridients",
         field: "title",
-      }).any()(req, res, function (err) {
-        if (err instanceof multer.MulterError) {
-          return res.status(400).send({
-            message: `Запись с именем уже существует`,
-          });
-        } else {
-          return res.status(400).send({
-            message: `Запись с именем уже существует ххехехехе`,
-          });
-        }
-      });
-    },
+      }
+    ),
     ingrCntrlr.create
   );
   app.post("/api/ingridients/filter", ingrCntrlr.getAllFilter);
@@ -36,13 +28,13 @@ module.exports = function (app) {
 
   app.patch(
     "/api/ingridients/:id",
-    multerUpload("ingridients").any(),
+    multerUpload("ingridients", { method: "any" }),
     ingrCntrlr.update
   );
 
   app.post(
     "/api/ingridients/:id/images",
-    multerUpload("ingridients").single("file"),
+    multerUpload("ingridients", { method: "single", methodArgs: "file" }),
     ingrCntrlr.uploadImage
   );
 

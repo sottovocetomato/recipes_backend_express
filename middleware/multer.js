@@ -47,14 +47,36 @@ const storageEngine = (filePath) =>
     },
   });
 
-exports.multerUpload = (filePath, checkExistenceData = {}) =>
-  multer({
-    storage: storageEngine(filePath),
-    limits: { fileSize: 10000000 },
-    fileFilter: async (req, file, cb) => {
-      checkFileType(file, cb);
-      if (checkExistenceData?.tableName && checkExistenceData?.field) {
-        await checkExistBeforeUpload(req, file, cb, checkExistenceData);
+exports.multerUpload =
+  (filePath, multerMethod, checkExistenceData = {}) =>
+  (req, res, next) => {
+    const { method, methodArgs } = multerMethod;
+    console.log(method);
+    const upload = multer({
+      storage: storageEngine(filePath),
+      limits: { fileSize: 10000000 },
+      fileFilter: async (req, file, cb) => {
+        checkFileType(file, cb);
+        if (checkExistenceData?.tableName && checkExistenceData?.field) {
+          await checkExistBeforeUpload(req, file, cb, checkExistenceData);
+        }
+      },
+    })[method](methodArgs);
+    console.log(upload);
+    upload(req, res, function (err) {
+      try {
+        console.log(err);
+        if (err instanceof multer.MulterError) {
+          return res.status(400).send({
+            message: `Запись с именем уже существует`,
+          });
+        } else {
+          return res.status(400).send({
+            message: `Запись с именем уже существует ххехехехе`,
+          });
+        }
+      } catch (e) {
+        return next(err);
       }
-    },
-  });
+    });
+  };

@@ -10,7 +10,7 @@ const upload = multer();
 module.exports = function (app) {
   app.post(
     "/api/recipes",
-    [checkToken, multerUpload("recipes").any()],
+    [checkToken, multerUpload("recipes", { method: "any" })],
     recipeCntrlr.create
   );
   app.post("/api/recipes/filter", recipeCntrlr.getAllFilter);
@@ -33,20 +33,26 @@ module.exports = function (app) {
   app.get("/api/recipes", recipeCntrlr.getAll);
   app.patch(
     "/api/recipes/:id",
-    [checkToken, multerUpload("recipes").any()],
+    [checkToken, multerUpload("recipes", { method: "any" })],
     recipeCntrlr.update
   );
   app.delete("/api/recipes/:id", checkToken, recipeCntrlr.delete);
 
   app.post(
     "/api/recipes/:id/images",
-    [checkToken, multerUpload("recipes").single("file")],
+    [
+      checkToken,
+      multerUpload("recipes", { method: "single", methodArgs: "file" }),
+    ],
     recipeCntrlr.uploadImageById
   );
 
   app.post(
     "/api/recipes/images",
-    [checkToken, multerUpload("recipes").single("file")],
+    [
+      checkToken,
+      multerUpload("recipes", { method: "single", methodArgs: "file" }),
+    ],
     recipeCntrlr.uploadImage
   );
 
