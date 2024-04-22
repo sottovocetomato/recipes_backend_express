@@ -65,7 +65,7 @@ exports.multerUpload =
     console.log(upload);
     upload(req, res, function (err) {
       try {
-        console.log(err);
+        if (!err) return next();
         if (err instanceof multer.MulterError) {
           return res.status(400).send({
             message: `Запись с именем уже существует`,
