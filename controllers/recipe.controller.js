@@ -244,6 +244,7 @@ exports.getAllFilter = async (req, res) => {
     ],
     limit: parseInt(limit),
     offset: getOffset(limit, page),
+    distinct: true,
   })
     .then(({ count, rows: data }) => {
       const _meta = getPaginationMeta({ limit, page, count });
