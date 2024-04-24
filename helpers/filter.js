@@ -11,13 +11,16 @@ exports.parseFilter = (filter, noRule = false) => {
     // if (!val) break;
     if (rule === "LIKE") val = `%${val}%`;
     if (rule === "EQ") val = `${val}`;
+    if (rule === "BETWEEN") {
+      const valArr = val.split(",");
+      val = [`${valArr[0]}, ${valArr[1]}`];
+    }
 
-    if(noRule) {
-      where[key] = val
+    if (noRule) {
+      where[key] = val;
     } else {
       where[key] = { [Op[rule.toLowerCase()]]: val };
     }
-
   }
   return where;
 };
