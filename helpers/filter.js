@@ -13,7 +13,7 @@ exports.parseFilter = (filter, noRule = false) => {
     if (rule === "EQ") val = `${val}`;
     if (rule === "BETWEEN") {
       const valArr = val.split(",");
-      val = [valArr[0], valArr[1]];
+      val = [valArr[0].trim(), valArr[1].trim()];
     }
 
     if (noRule) {
