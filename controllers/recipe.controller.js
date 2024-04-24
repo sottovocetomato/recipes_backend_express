@@ -229,7 +229,7 @@ exports.getById = async (req, res) => {
 exports.getAllFilter = async (req, res) => {
   const { limit = db.limit, page = 1 } = req.query;
   const { filters = {} } = req.body;
-
+  console.log(filters, "FILTEEEEEEEEEEERSSSSS");
   await Recipe.findAndCountAll({
     where: parseFilter(filters),
     include: [
