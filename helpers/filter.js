@@ -13,13 +13,14 @@ exports.parseFilter = (filter, noRule = false) => {
     if (rule === "EQ") val = `${val}`;
     if (rule === "BETWEEN") {
       const valArr = val.split(",");
-      val = [`${valArr[0]}, ${valArr[1]}`];
+      val = [`${valArr[0]},${valArr[1]}`];
     }
 
     if (noRule) {
       where[key] = val;
     } else {
       where[key] = { [Op[rule.toLowerCase()]]: val };
+      console.log(where[key], "RECIPE FILTER");
     }
   }
   return where;
