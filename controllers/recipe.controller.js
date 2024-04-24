@@ -241,12 +241,7 @@ exports.getAllFilter = async (req, res) => {
         },
         // required: false,
       },
-      {
-        model: User,
-        through: {
-          attributes: ["id", "user_img"],
-        },
-      },
+      { model: User, attributes: ["username", "user_img"] },
     ],
     limit: parseInt(limit),
     offset: getOffset(limit, page),
