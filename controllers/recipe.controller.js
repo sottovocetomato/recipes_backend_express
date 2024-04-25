@@ -263,10 +263,10 @@ exports.getAllByTitleSQL = async (req, res) => {
   const val = parseFilter(filters, true)["title"];
   let results = await db.sequelize
     .query(
-      `SELECT \`recipes\`.*, user_img, username FROM recipes.recipes INNER JOIN recipes.recipesingridients
-        ON recipesingridients.recipeId = recipes.id
+      `SELECT \`recipes\`.*, user_img, username FROM recipes.recipes INNER JOIN recipes.RecipesIngridients
+        ON RecipesIngridients.recipeId = recipes.id
         INNER JOIN recipes.ingridients
-        ON recipesingridients.ingridientId = ingridients.id
+        ON RecipesIngridients.ingridientId = ingridients.id
         INNER JOIN recipes.users
         ON recipes.userId = users.id
         WHERE recipes.title LIKE '${val}' OR ingridients.title LIKE '${val}'
