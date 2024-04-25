@@ -279,10 +279,10 @@ exports.getAllByTitleSQL = async (req, res) => {
     });
   const meta = await db.sequelize
     .query(
-      `SELECT COUNT(*) FROM recipes.recipes INNER JOIN recipes.recipesingridients
-        ON recipesingridients.recipeId = recipes.id
+      `SELECT COUNT(*) FROM recipes.recipes INNER JOIN recipes.RecipesIngridients
+        ON RecipesIngridients.recipeId = recipes.id
         INNER JOIN recipes.ingridients
-        ON recipesingridients.ingridientId = ingridients.id
+        ON RecipesIngridients.ingridientId = ingridients.id
         where recipes.title LIKE '${val}' OR ingridients.title LIKE '${val}'`,
       { type: QueryTypes.SELECT }
     )
