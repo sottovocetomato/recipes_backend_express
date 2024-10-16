@@ -22,7 +22,7 @@ app.use(express.json());
 app.use(express.static(__dirname + "/public"));
 
 const corsOptions = {
-  origin: "http://localhost:5173",
+  origin: "https://quiettomato.ru/",
   optionsSuccessStatus: 200,
 };
 app.use(cors(corsOptions));
